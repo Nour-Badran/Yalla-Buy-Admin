@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "924582595952",
+    "project_id": "yalla-buy-admin",
+    "storage_bucket": "yalla-buy-admin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924582595952:android:fcd57063b5b76e7d2b13b5",
+        "android_client_info": {
+          "package_name": "com.example.yallabuyadmin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHsDhuwgTRGs8vCiAwVsRVzpsFgWznMzc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

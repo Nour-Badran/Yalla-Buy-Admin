@@ -31,6 +31,7 @@ class ProductViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 api.createProduct(ProductResponse(product))
+                Log.d("CreateProduct", "Product data: $product")
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Unknown error")
@@ -38,11 +39,10 @@ class ProductViewModel : ViewModel() {
         }
     }
 
-    // Update an existing product
-    fun updateProduct(productId: Long, product: Product, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun updateProduct(product: Product, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                api.updateProduct(productId, ProductResponse(product))
+                api.updateProduct(product.id ?: 0, ProductResponse(product))
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Unknown error")
@@ -50,20 +50,16 @@ class ProductViewModel : ViewModel() {
         }
     }
 
-    // Delete a product
     fun deleteProduct(productId: Long, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = api.deleteProduct(productId)
-                if (response.isSuccessful) {
-                    onSuccess()
-                } else {
-                    onError("Failed to delete product")
-                }
+                api.deleteProduct(productId)
+                onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Unknown error")
             }
         }
     }
+
 }
 

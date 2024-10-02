@@ -11,10 +11,10 @@ interface ApiService {
     @POST("products.json")
     suspend fun createProduct(@Body product: ProductResponse): ProductResponse
 
-    @PUT("products/{id}")
+    @PUT("products/{id}.json")
     suspend fun updateProduct(@Path("id") productId: Long, @Body product: ProductResponse): ProductResponse
 
-    @DELETE("products/{id}")
+    @DELETE("products/{id}.json")
     suspend fun deleteProduct(@Path("id") productId: Long): Response<Void>
 }
 

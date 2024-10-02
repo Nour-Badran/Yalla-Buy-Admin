@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
     var productName by remember { mutableStateOf("") }
     var productList by remember { mutableStateOf(listOf<Product>()) }
+    var selectedProduct by remember { mutableStateOf<Product?>(null) }
     var errorMessage by remember { mutableStateOf("") }
 
     Scaffold(
@@ -35,10 +37,11 @@ fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
                 )
             )
         },
-        content = {
+        content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(padding)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -50,10 +53,12 @@ fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Button(
                     onClick = {
+                        // Create a new product
                         val newProduct = Product(
-                            title = productName,
+                            title = "productName",
                             body_html = "Sample Description",
                             vendor = "Sample Vendor",
                             product_type = "Sample Type",
@@ -64,16 +69,10 @@ fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
                             errorMessage = ""
                             viewModel.getAllProducts({ products ->
                                 productList = products
-                            }, { error ->
-                                errorMessage = error
-                            })
-                        }, { error ->
-                            errorMessage = error
-                        })
+                            }, { error -> errorMessage = error })
+                        }, { error -> errorMessage = error })
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
                 ) {
                     Text("Create Product")
                 }
@@ -82,16 +81,13 @@ fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
 
                 Button(
                     onClick = {
+                        // Fetch all products
                         viewModel.getAllProducts({ products ->
                             productList = products
                             errorMessage = ""
-                        }, { error ->
-                            errorMessage = error
-                        })
+                        }, { error -> errorMessage = error })
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
                 ) {
                     Text("Get All Products")
                 }
@@ -109,12 +105,60 @@ fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f), // Take remaining space
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(productList) { product ->
-                        ProductCard(product = product)
+                        ProductCard(product = product, onSelect = {
+                            selectedProduct = product
+                            productName = product.title // Set selected product details in the text field
+                        })
                     }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Update Button
+                Button(
+                    onClick = {
+                        selectedProduct?.let {
+                            val updatedProduct = it.copy(title = productName)
+                            viewModel.updateProduct(updatedProduct, {
+                                productName = ""
+                                selectedProduct = null
+                                errorMessage = ""
+                                viewModel.getAllProducts({ products ->
+                                    productList = products
+                                }, { error -> errorMessage = error })
+                            }, { error -> errorMessage = error })
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                ) {
+                    Text("Update Product")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Delete Button
+                Button(
+                    onClick = {
+                        selectedProduct?.let {
+                            viewModel.deleteProduct(it.id ?: 0, {
+                                productName = ""
+                                selectedProduct = null
+                                errorMessage = ""
+                                viewModel.getAllProducts({ products ->
+                                    productList = products
+                                }, { error -> errorMessage = error })
+                            }, { error -> errorMessage = error })
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                ) {
+                    Text("Delete Product")
                 }
             }
         }
@@ -122,12 +166,13 @@ fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
 }
 
 @Composable
-fun ProductCard(product: Product) {
+fun ProductCard(product: Product, onSelect: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { onSelect() }, // Handle click to select product
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {

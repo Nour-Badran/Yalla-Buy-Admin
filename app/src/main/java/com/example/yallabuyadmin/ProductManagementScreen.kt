@@ -1,6 +1,7 @@
 package com.example.yallabuyadmin
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
@@ -14,10 +15,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -165,20 +169,36 @@ fun ProductManagementScreen(viewModel: ProductViewModel = viewModel()) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductCard(product: Product, onSelect: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(8.dp)
-            .clickable { onSelect() }, // Handle click to select product
+            .clickable { onSelect() },
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(16.dp)
         ) {
+            // Load and display the first image of the product, if available
+            product.images.firstOrNull()?.let { image ->
+                Image(
+                    painter = rememberAsyncImagePainter(image.src),
+                    contentDescription = "Product Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             Text(text = "Title: ${product.title}", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "Vendor: ${product.vendor}", style = MaterialTheme.typography.bodySmall)
@@ -187,6 +207,19 @@ fun ProductCard(product: Product, onSelect: () -> Unit) {
                 text = "Product Type: ${product.product_type}",
                 style = MaterialTheme.typography.bodySmall
             )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Display product variants if available
+            if (product.variants.isNotEmpty()) {
+                Text(text = "Variants:", style = MaterialTheme.typography.titleSmall)
+                Spacer(modifier = Modifier.height(4.dp))
+                product.variants.forEach { variant ->
+                    Text(
+                        text = "• ${variant.title} - Price: ${variant.price}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
         }
     }
 }

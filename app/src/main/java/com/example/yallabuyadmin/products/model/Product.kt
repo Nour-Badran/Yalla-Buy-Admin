@@ -1,4 +1,4 @@
-package com.example.yallabuyadmin
+package com.example.yallabuyadmin.products.model
 
 data class Product(
     val id: Long? = null,
@@ -7,19 +7,19 @@ data class Product(
     val vendor: String,
     val product_type: String,
     val tags: String,
-    val images: List<Image> = listOf(),  // Assuming Image is a separate data class for images.
-    val variants: List<Variant> = listOf() // Add this for variants.
+    val images: List<Image> = listOf(),
+    val variants: List<Variant> = listOf()
 )
 
 data class Variant(
-    val id: Long,
+    val id: Long? = null,
     val title: String,
     val price: String,
     val sku: String
 )
 
 data class Image(
-    val id: Long,
+    val id: Long? = null,
     val src: String // URL of the product image
 )
 data class ProductResponse(

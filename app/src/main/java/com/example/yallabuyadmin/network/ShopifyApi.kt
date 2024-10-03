@@ -1,6 +1,7 @@
-package com.example.yallabuyadmin
+package com.example.yallabuyadmin.network
 
-import retrofit2.Call
+import com.example.yallabuyadmin.products.model.ProductResponse
+import com.example.yallabuyadmin.products.model.ProductsResponse
 import retrofit2.Response
 import retrofit2.http.*
 

@@ -1,4 +1,4 @@
-package com.example.yallabuyadmin
+package com.example.yallabuyadmin.network
 
 import okhttp3.Credentials
 import retrofit2.Retrofit

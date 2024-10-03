@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,7 +32,8 @@ import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 fun ProductManagementScreen(
     viewModel: ProductViewModel,
     onNavigateToUpdate: (Product) -> Unit,
-    onNavigateToCreate: () -> Unit
+    onNavigateToCreate: () -> Unit,
+    onBack: () -> Unit
 ) {
     val productsState by viewModel.apiState.collectAsState()
     val successMessage by viewModel.successMessage.collectAsState()
@@ -67,6 +69,14 @@ fun ProductManagementScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = onNavigateToCreate) {
                         Icon(Icons.Default.Add, contentDescription = "Create Product")
@@ -150,6 +160,7 @@ fun ProductManagementScreen(
         )
     }
 }
+
 
 
 @Composable

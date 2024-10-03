@@ -50,10 +50,16 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         navigateToInventory -> {
-                            InventoryScreen(onBack = { navigateToInventory = false })
+                            InventoryScreen(onBack = {
+                                navigateToInventory = false
+                                navigateToMenu = true
+                            })
                         }
                         navigateToCoupons -> {
-                            CouponsScreen(onBack = { navigateToCoupons = false })
+                            CouponsScreen(onBack = {
+                                navigateToCoupons = false
+                                navigateToMenu = true
+                            })
                         }
                         createNewProduct -> {
                             CreateProductScreen(
@@ -81,8 +87,12 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToCreate = {
                                     createNewProduct = true
+                                },
+                                onBack = {
+                                    navigateToMenu = true
                                 }
                             )
+
                         }
                     }
                 }

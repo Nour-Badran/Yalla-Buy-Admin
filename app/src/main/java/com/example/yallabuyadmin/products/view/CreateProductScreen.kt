@@ -1,8 +1,10 @@
 package com.example.yallabuyadmin.products.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -10,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -35,10 +38,11 @@ fun CreateProductScreen(
     var productType by remember { mutableStateOf("") }
     var variants by remember { mutableStateOf("") }
     var imageUrl by remember { mutableStateOf("") }
-    val isLoading by viewModel.isLoading.collectAsState() // Collect loading state from ViewModel
+    var price by remember { mutableStateOf("") }
+    val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    val successMessage by viewModel.successMessage.collectAsState() // Collect success message
-    val coroutineScope = rememberCoroutineScope() // Coroutine scope for launching coroutines
+    val successMessage by viewModel.successMessage.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -61,7 +65,31 @@ fun CreateProductScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Product Information", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                if (imageUrl.isNotBlank()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(imageUrl),
+                        contentDescription = "Product Image",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.LightGray)
+                            .padding(8.dp),
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.LightGray)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("No Image Available", fontSize = 18.sp, color = Color.Gray)
+                    }
+                }
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -112,26 +140,22 @@ fun CreateProductScreen(
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
-                    }
-                }
 
-                if (imageUrl.isNotBlank()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageUrl),
-                        contentDescription = "Product Image",
-                        modifier = Modifier
-                            .size(150.dp)
-                            .padding(8.dp),
-                        contentScale = ContentScale.Crop
-                    )
+                        OutlinedTextField(
+                            value = price,
+                            onValueChange = { price = it },
+                            label = { Text("Price", fontWeight = FontWeight.Bold) },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+                    }
                 }
 
                 Button(
                     onClick = {
                         val variantList = variants.split(",").map { title ->
-                            Variant(title = title.trim(), price = "0.0", sku = "")
+                            Variant(title = title.trim(), price = price, sku = "")
                         }
-                        // Create a new product
                         val newProduct = Product(
                             title = productName,
                             body_html = "Sample Description",
@@ -141,7 +165,7 @@ fun CreateProductScreen(
                             images = listOf(com.example.yallabuyadmin.products.model.Image(src = imageUrl)),
                             variants = variantList
                         )
-                        viewModel.createProduct(newProduct) // Call the ViewModel's createProduct function
+                        viewModel.createProduct(newProduct)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -155,12 +179,11 @@ fun CreateProductScreen(
                     }
                 }
 
-                // Display success message and navigate back
                 successMessage?.let {
                     coroutineScope.launch {
-                        delay(3000) // Show the message for 2 seconds
+                        delay(3000)
                         viewModel.clearSuccess()
-                        onBack() // Navigate back after delay
+                        onBack()
                     }
                     Snackbar(
                         modifier = Modifier.padding(8.dp),
@@ -174,7 +197,6 @@ fun CreateProductScreen(
                     }
                 }
 
-                // Display error message if any
                 errorMessage?.let { message ->
                     Snackbar(
                         modifier = Modifier.padding(8.dp),

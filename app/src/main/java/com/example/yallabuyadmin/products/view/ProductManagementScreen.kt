@@ -11,15 +11,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -46,7 +52,6 @@ fun ProductManagementScreen(
         viewModel.getAllProducts()
     }
 
-    // Handle Snackbar visibility for deletion success message
     if (snackbarVisible) {
         LaunchedEffect(snackbarMessage) {
             snackbarHostState.showSnackbar(snackbarMessage)
@@ -87,9 +92,9 @@ fun ProductManagementScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) {
             Snackbar(
                 modifier = Modifier.padding(8.dp),
-                containerColor = Color.Red, // Custom red background color
-                contentColor = Color.White, // Custom text color
-                actionColor = Color.White, // Custom action button color
+                containerColor = Color.Red,
+                contentColor = Color.White,
+                actionColor = Color.White,
                 snackbarData = it
             )
         }},
@@ -110,13 +115,14 @@ fun ProductManagementScreen(
                 }
                 is ApiState.Success -> {
                     val productList = (productsState as ApiState.Success<List<Product>>).data
-                    LazyColumn(
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2), // Specify 2 columns
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(padding)
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalArrangement = Arrangement.spacedBy(8.dp) // Adjust space between columns
                     ) {
                         items(productList) { product ->
                             ProductCard(
@@ -162,7 +168,6 @@ fun ProductManagementScreen(
 }
 
 
-
 @Composable
 fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, isDeleting: Boolean) {
     Card(
@@ -177,6 +182,7 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
+                .height(300.dp) // Set a fixed height for uniformity
         ) {
             // Load and display the first image of the product, if available
             product.images.firstOrNull()?.let { image ->
@@ -185,11 +191,10 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
                     contentDescription = "Product Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(100.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color.LightGray)
-                        .padding(4.dp),
-                    contentScale = ContentScale.Fit
+                        .background(Color.LightGray),
+                    contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -244,21 +249,140 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Action Buttons: Add to Cart & Delete
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+            // Action Button: Delete with FAB
+            Box(
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Button(
+                FloatingActionButton(
                     onClick = onDelete,
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    containerColor = MaterialTheme.colorScheme.error, // Use containerColor instead of backgroundColor
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .wrapContentHeight()
                 ) {
                     if (isDeleting) {
                         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                     } else {
-                        Text("Delete Product")
+                        Icon(Icons.Default.Delete, contentDescription = "Delete Product")
                     }
+                }
+            }
+        }
+    }
+}
+@Composable
+fun text(){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ){
+        Text(
+            text = "hello",
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+            maxLines = 2,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+    }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun ProductCardPreview() {
+    val product = Product(body_html = "test", title = "Nour", product_type = "Nour", tags = "Nour", vendor = "Nour")
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(16.dp)
+                .height(1.dp) // Set a fixed height for uniformity
+        ) {
+            // Load and display the first image of the product, if available
+            product.images.firstOrNull()?.let { image ->
+                Image(
+                    painter = rememberAsyncImagePainter(image.src),
+                    contentDescription = "Product Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.LightGray),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Product Title
+            Text(
+                text = product.title,
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                maxLines = 2,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Vendor Name
+            Text(
+                text = "by ${product.vendor}",
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Product Price
+            if (product.variants.isNotEmpty()) {
+                val price = product.variants.first().price
+                Text(
+                    text = "Price: $${price}",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, color = MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Ratings and Reviews (mocked for UI demonstration)
+            Row(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(5) {
+                    Icon(
+                        imageVector = Icons.Default.Add, // Replace this with a star icon in a real scenario
+                        contentDescription = null,
+                        tint = Color(0xFFFFD700),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "(120 reviews)", style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray))
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Action Button: Delete with FAB
+            Box(
+                contentAlignment = Alignment.TopEnd,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                FloatingActionButton(
+                    onClick = {},
+                    containerColor = MaterialTheme.colorScheme.error, // Use containerColor instead of backgroundColor
+                    modifier = Modifier.padding(8.dp)
+                ) {
+
                 }
             }
         }

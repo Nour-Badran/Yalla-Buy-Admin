@@ -1,5 +1,6 @@
 package com.example.yallabuyadmin.products.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,7 @@ import com.example.yallabuyadmin.products.model.Variant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProductScreen(
@@ -56,160 +58,170 @@ fun CreateProductScreen(
             )
         },
         content = { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (imageUrl.isNotBlank()) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageUrl),
-                        contentDescription = "Product Image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.LightGray)
-                            .padding(8.dp),
-                        contentScale = ContentScale.FillBounds
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.LightGray)
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("No Image Available", fontSize = 18.sp, color = Color.Gray)
-                    }
-                }
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = productName,
-                            onValueChange = { productName = it },
-                            label = { Text("Product Name", fontWeight = FontWeight.Bold) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = vendor,
-                            onValueChange = { vendor = it },
-                            label = { Text("Vendor", fontWeight = FontWeight.Bold) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = productType,
-                            onValueChange = { productType = it },
-                            label = { Text("Product Type", fontWeight = FontWeight.Bold) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = variants,
-                            onValueChange = { variants = it },
-                            label = { Text("Variants (Comma separated)", fontWeight = FontWeight.Bold) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = imageUrl,
-                            onValueChange = { imageUrl = it },
-                            label = { Text("Image URL", fontWeight = FontWeight.Bold) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = price,
-                            onValueChange = { price = it },
-                            label = { Text("Price", fontWeight = FontWeight.Bold) },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        val variantList = variants.split(",").map { title ->
-                            Variant(title = title.trim(), price = price, sku = "")
-                        }
-                        val newProduct = Product(
-                            title = productName,
-                            body_html = "Sample Description",
-                            vendor = vendor,
-                            product_type = productType,
-                            tags = "Sample Tag",
-                            images = listOf(com.example.yallabuyadmin.products.model.Image(src = imageUrl)),
-                            variants = variantList
-                        )
-                        viewModel.createProduct(newProduct)
-                    },
+            // Use Box to position Snackbar at the bottom
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    if (imageUrl.isNotBlank()) {
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUrl),
+                            contentDescription = "Product Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.LightGray)
+                                .padding(8.dp),
+                            contentScale = ContentScale.FillBounds
+                        )
                     } else {
-                        Text("Create Product", fontSize = 18.sp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.LightGray)
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("No Image Available", fontSize = 18.sp, color = Color.Gray)
+                        }
+                    }
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = productName,
+                                onValueChange = { productName = it },
+                                label = { Text("Product Name", fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+
+                            OutlinedTextField(
+                                value = vendor,
+                                onValueChange = { vendor = it },
+                                label = { Text("Vendor", fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+
+                            OutlinedTextField(
+                                value = productType,
+                                onValueChange = { productType = it },
+                                label = { Text("Product Type", fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+
+                            OutlinedTextField(
+                                value = variants,
+                                onValueChange = { variants = it },
+                                label = { Text("Variants (Comma separated)", fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+
+                            OutlinedTextField(
+                                value = imageUrl,
+                                onValueChange = { imageUrl = it },
+                                label = { Text("Image URL", fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+
+                            OutlinedTextField(
+                                value = price,
+                                onValueChange = { price = it },
+                                label = { Text("Price", fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            val variantList = variants.split(",").map { title ->
+                                Variant(title = title.trim(), price = price, sku = "")
+                            }
+                            val newProduct = Product(
+                                title = productName,
+                                body_html = "Sample Description",
+                                vendor = vendor,
+                                product_type = productType,
+                                tags = "Sample Tag",
+                                images = listOf(com.example.yallabuyadmin.products.model.Image(src = imageUrl)),
+                                variants = variantList
+                            )
+                            viewModel.createProduct(newProduct)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        } else {
+                            Text("Create Product", fontSize = 18.sp)
+                        }
                     }
                 }
 
-                successMessage?.let {
+                // Display success Snackbar at the bottom
+                if (successMessage != null) {
                     coroutineScope.launch {
-                        delay(3000)
+                        delay(2000)
                         viewModel.clearSuccess()
                         onBack()
                     }
                     Snackbar(
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(8.dp),
                         action = {
                             TextButton(onClick = { viewModel.clearSuccess() }) {
                                 Text("Dismiss", color = Color.White)
                             }
                         }
                     ) {
-                        Text("Success: $it", color = Color.White)
+                        Text("Success: $successMessage", color = Color.White)
                     }
                 }
 
-                errorMessage?.let { message ->
+                // Display error Snackbar at the bottom
+                if (errorMessage != null) {
                     Snackbar(
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(8.dp),
                         action = {
                             TextButton(onClick = { viewModel.clearError() }) {
                                 Text("Dismiss", color = Color.White)
                             }
                         }
                     ) {
-                        Text("Error: $message", color = Color.White)
+                        Text("Error: $errorMessage", color = Color.White)
                     }
                 }
             }
         }
     )
 }
+

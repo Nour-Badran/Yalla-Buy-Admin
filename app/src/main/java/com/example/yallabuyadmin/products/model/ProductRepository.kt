@@ -25,4 +25,5 @@ class ProductRepository(private val api: ApiService) {
     suspend fun deleteProduct(productId: Long) {
         api.deleteProduct(productId)
     }
+
 }

@@ -7,6 +7,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yallabuyadmin.menu.model.MenuRemoteDataSource
+import com.example.yallabuyadmin.menu.model.MenuRepository
+import com.example.yallabuyadmin.menu.view.MenuScreen
+import com.example.yallabuyadmin.menu.viewmodel.MenuViewModel
+import com.example.yallabuyadmin.menu.viewmodel.MenuViewModelFactory
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModelFactory
@@ -31,10 +36,25 @@ class MainActivity : ComponentActivity() {
                     RetrofitInstance.api)
             ))
 
+            val menuRepository = MenuRepository(MenuRemoteDataSource(RetrofitInstance.api))
+            val menuViewModel: MenuViewModel = viewModel(factory = MenuViewModelFactory(menuRepository))
+
+            val inventoryCount = menuViewModel.inventoryCount.collectAsState().value
+            val productsCount = menuViewModel.productsCount.collectAsState().value
+            val couponsCount = menuViewModel.couponsCount.collectAsState().value
+
+            // Logout function
+            fun logout() {
+                // Handle logout logic here
+                // For example, clear user session, navigate to login screen, etc.
+                navigateToMenu = true // or set up your navigation logic
+            }
+
             MaterialTheme {
                 Surface {
                     when {
                         navigateToMenu -> {
+                            menuViewModel.loadCounts()
                             MenuScreen(
                                 onNavigateToProducts = {
                                     navigateToMenu = false
@@ -46,7 +66,11 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToCoupons = {
                                     navigateToMenu = false
                                     navigateToCoupons = true
-                                }
+                                },
+                                onLogout = { logout() },
+                                inventoryCount = inventoryCount.toString(),
+                                productsCount = productsCount.toString(),
+                                couponsCount = couponsCount.toString()
                             )
                         }
                         navigateToInventory -> {
@@ -92,7 +116,6 @@ class MainActivity : ComponentActivity() {
                                     navigateToMenu = true
                                 }
                             )
-
                         }
                     }
                 }

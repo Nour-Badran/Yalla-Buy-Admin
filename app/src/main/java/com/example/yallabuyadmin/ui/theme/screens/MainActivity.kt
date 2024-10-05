@@ -7,6 +7,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yallabuyadmin.coupons.CouponsRemoteDataSource
+import com.example.yallabuyadmin.coupons.CouponsRepository
+import com.example.yallabuyadmin.coupons.CouponsScreen
+import com.example.yallabuyadmin.coupons.CouponsViewModel
+import com.example.yallabuyadmin.coupons.CouponsViewModelFactory
 import com.example.yallabuyadmin.menu.model.MenuRemoteDataSource
 import com.example.yallabuyadmin.menu.model.MenuRepository
 import com.example.yallabuyadmin.menu.view.MenuScreen
@@ -38,6 +43,9 @@ class MainActivity : ComponentActivity() {
 
             val menuRepository = MenuRepository(MenuRemoteDataSource(RetrofitInstance.api))
             val menuViewModel: MenuViewModel = viewModel(factory = MenuViewModelFactory(menuRepository))
+
+            val couponsRepository = CouponsRepository(CouponsRemoteDataSource(RetrofitInstance.api))
+            val couponsViewModel: CouponsViewModel = viewModel(factory = CouponsViewModelFactory(couponsRepository))
 
             val inventoryCount = menuViewModel.inventoryCount.collectAsState().value
             val productsCount = menuViewModel.productsCount.collectAsState().value
@@ -83,7 +91,7 @@ class MainActivity : ComponentActivity() {
                             CouponsScreen(onBack = {
                                 navigateToCoupons = false
                                 navigateToMenu = true
-                            })
+                            }, viewModel = couponsViewModel)
                         }
                         createNewProduct -> {
                             CreateProductScreen(

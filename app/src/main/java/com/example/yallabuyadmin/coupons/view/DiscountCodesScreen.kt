@@ -191,11 +191,10 @@ fun DiscountCodeDialog(
                     TextButton(onClick = {
                         val updatedCode = discountCode?.copy(
                             code = code,
-                            usage_count = usageCount.toInt()
+                            usage_count = usageCount.toLong()
                         ) ?: DiscountCode(
-                            id = 0, // Replace with actual ID if needed
                             code = code,
-                            usage_count = usageCount.toInt(),
+                            usage_count = usageCount.toLong(),
                             created_at = ""
                         )
                         onConfirm(DiscountCodeRequest(updatedCode))

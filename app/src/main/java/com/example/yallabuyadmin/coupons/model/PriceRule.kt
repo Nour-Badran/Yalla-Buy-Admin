@@ -10,7 +10,8 @@ data class PriceRule(
     val ends_at: String,
     val target_selection: String,
     val allocation_method: String,
-    val customer_selection: String
+    val customer_selection: String,
+    val usage_limit: Long
 )
 
 data class priceRuleResponse(
@@ -24,9 +25,10 @@ data class priceRuleRequest(
 data class DiscountCode(
     val id: Long? = null,
     val code: String,
-    val usage_count: Int,
+    val usage_count: Long,
     val created_at: String
 )
+
  data class DiscountCodeResponse(
      val discount_codes: List<DiscountCode>
  )

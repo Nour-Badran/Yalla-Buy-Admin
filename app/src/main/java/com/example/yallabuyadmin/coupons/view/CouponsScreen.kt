@@ -1,5 +1,6 @@
 package com.example.yallabuyadmin.coupons.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -159,7 +160,6 @@ fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewM
         }
     )
 }
-
 @Composable
 fun PriceRuleDialog(
     onDismiss: () -> Unit,
@@ -173,6 +173,12 @@ fun PriceRuleDialog(
     var endsAt by remember { mutableStateOf(priceRule?.ends_at ?: "") }
     var targetSelection by remember { mutableStateOf(priceRule?.target_selection ?: "") }
     var allocationMethod by remember { mutableStateOf(priceRule?.allocation_method ?: "") }
+    var targetType by remember { mutableStateOf(priceRule?.target_type ?: "") }
+    var customerSelection by remember { mutableStateOf(priceRule?.customer_selection ?: "all") }
+    var usageLimit by remember { mutableStateOf(priceRule?.usage_limit?.toString() ?: "") }
+
+    val customerOptions = listOf("all", "prerequisite", "entitled")
+    var expanded by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -221,6 +227,51 @@ fun PriceRuleDialog(
                     label = { Text("Allocation Method") },
                     isError = allocationMethod.isEmpty()
                 )
+                TextField(
+                    value = targetType,
+                    onValueChange = { targetType = it },
+                    label = { Text("Target Type") },
+                    isError = targetType.isEmpty()
+                )
+
+// Dropdown for Customer Selection
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            expanded = true
+                        }
+                ) {
+                    TextField(
+                        value = customerSelection,
+                        onValueChange = {},
+                        label = { Text("Customer Selection") },
+                        readOnly = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        customerOptions.forEach { option ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    customerSelection = option
+                                    expanded = false
+                                },
+                                text = { Text(option) } // Pass the Text as a lambda
+                            )
+                        }
+                    }
+                }
+
+
+                TextField(
+                    value = usageLimit,
+                    onValueChange = { usageLimit = it },
+                    label = { Text("User Limit") },
+                    isError = usageLimit.toIntOrNull() == null || usageLimit.toInt() < 0
+                )
             }
         },
         confirmButton = {
@@ -230,14 +281,15 @@ fun PriceRuleDialog(
                         PriceRule(
                             id = priceRule?.id, // Pass the existing id if editing
                             title = ruleName,
-                            target_type = "line_item", // Adjust this as needed
-                            value_type = valueType,
                             value = discountPercentage.toDoubleOrNull() ?: 0.0,
+                            value_type = valueType,
                             starts_at = startsAt,
                             ends_at = endsAt,
                             target_selection = targetSelection,
                             allocation_method = allocationMethod,
-                            customer_selection = "all" // Adjust this as needed
+                            target_type = targetType,
+                            customer_selection = customerSelection,
+                            usage_limit = usageLimit.toLongOrNull() ?: 0
                         )
                     )
                 )
@@ -252,60 +304,3 @@ fun PriceRuleDialog(
         }
     )
 }
-
-//@Composable
-//fun DiscountCodeDialog(
-//    onDismiss: () -> Unit,
-//    onSubmit: (DiscountCode) -> Unit,
-//    discountCode: DiscountCode?
-//) {
-//    var code by remember { mutableStateOf(discountCode?.code ?: "") }
-//    var usageCount by remember { mutableStateOf(discountCode?.usageCount?.toString() ?: "") }
-//
-//    AlertDialog(
-//        onDismissRequest = onDismiss,
-//        title = { Text("Add/Edit Discount Code") },
-//        text = {
-//            Column {
-//                TextField(
-//                    value = code,
-//                    onValueChange = { code = it },
-//                    label = { Text("Code") }
-//                )
-//                TextField(
-//                    value = usageCount,
-//                    onValueChange = { usageCount = it },
-//                    label = { Text("Usage Count") }
-//                )
-//            }
-//        },
-//        confirmButton = {
-//            Button(onClick = {
-//                val usageCountInt = usageCount.toIntOrNull() ?: 0
-//
-//                if (discountCode != null) {
-//                    // Update existing DiscountCode
-//                    onSubmit(discountCode.copy(code = code, usageCount = usageCountInt))
-//                } else {
-//                    // Create a new DiscountCode
-//                    onSubmit(
-//                        DiscountCode(
-//                            id = 0, // Placeholder, will be generated by the server
-//                            code = code,
-//                            usageCount = usageCountInt,
-//                            createdAt = "" // Placeholder, adjust accordingly
-//                        )
-//                    )
-//                }
-//            }) {
-//                Text("Submit")
-//            }
-//        },
-//        dismissButton = {
-//            Button(onClick = onDismiss) {
-//                Text("Dismiss")
-//            }
-//        }
-//    )
-//}
-

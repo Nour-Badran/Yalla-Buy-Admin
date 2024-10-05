@@ -38,10 +38,12 @@ class CouponsRemoteDataSource(private val apiService: ApiService) {
 //        }
     }
     suspend fun getDiscountCodes(priceRuleId: Long): DiscountCodeResponse {
+        Log.d("Discount Codes",apiService.getDiscountCodes(priceRuleId).toString())
         return apiService.getDiscountCodes(priceRuleId)
     }
 
     suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest) {
+        Log.d("Discount Code",discountCode.toString())
         apiService.createDiscountCode(priceRuleId, discountCode)
     }
 

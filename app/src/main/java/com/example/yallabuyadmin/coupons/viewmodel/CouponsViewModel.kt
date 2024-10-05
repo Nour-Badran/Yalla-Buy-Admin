@@ -1,8 +1,13 @@
-package com.example.yallabuyadmin.coupons
+package com.example.yallabuyadmin.coupons.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.yallabuyadmin.coupons.model.CouponsRepository
+import com.example.yallabuyadmin.coupons.model.DiscountCode
+import com.example.yallabuyadmin.coupons.model.DiscountCodeRequest
+import com.example.yallabuyadmin.coupons.model.PriceRule
+import com.example.yallabuyadmin.coupons.model.priceRuleRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +17,7 @@ import retrofit2.HttpException
 class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewModel() {
 
     private val _discountCodes = MutableStateFlow<List<DiscountCode>>(emptyList())
-    val discountCodes: StateFlow<List<DiscountCode>> get() = _discountCodes.asStateFlow()
+    val discountCodes: StateFlow<List<DiscountCode>> get() = _discountCodes
 
     private var priceRuleId: Long? = null
 
@@ -48,6 +53,20 @@ class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewM
         }
     }
 
+    fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest) {
+        viewModelScope.launch {
+            try{
+                val result = couponsRepository.updatePriceRule(priceRuleId, priceRule)
+                Log.d("Result",result.toString())
+                //_deleteResult.value = result
+                fetchPriceRules()
+            }  catch (e: Exception) {
+                // Handle errors accordingly
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun deletePriceRule(priceRuleId: Long) {
         viewModelScope.launch {
             try{
@@ -63,17 +82,13 @@ class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewM
     }
     fun fetchDiscountCodes(priceRuleId: Long) {
         viewModelScope.launch {
-            try {
-                val codes = couponsRepository.getDiscountCodes(priceRuleId)
-                _discountCodes.value = codes
-            } catch (e: Exception) {
-                // Handle errors accordingly
-                e.printStackTrace()
+            couponsRepository.getDiscountCodes(priceRuleId).collect { discountCodes ->
+                _discountCodes.value = discountCodes
             }
         }
     }
 
-    fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCode) {
+    fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest) {
         viewModelScope.launch {
             try {
                 couponsRepository.createDiscountCode(priceRuleId, discountCode)
@@ -108,7 +123,7 @@ class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewM
         viewModelScope.launch {
             try {
                 couponsRepository.deleteDiscountCode(id)
-                // Optionally refresh the list
+                fetchDiscountCodes(priceRuleId!!) // Refresh discount codes
             } catch (e: Exception) {
                 e.printStackTrace()
             }

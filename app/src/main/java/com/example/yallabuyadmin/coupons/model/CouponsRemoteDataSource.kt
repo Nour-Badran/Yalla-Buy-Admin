@@ -1,7 +1,8 @@
-package com.example.yallabuyadmin.coupons
+package com.example.yallabuyadmin.coupons.model
 
 import android.util.Log
 import com.example.yallabuyadmin.network.ApiService
+import retrofit2.Response
 
 class CouponsRemoteDataSource(private val apiService: ApiService) {
 
@@ -28,14 +29,19 @@ class CouponsRemoteDataSource(private val apiService: ApiService) {
             Result.failure(e)
         }
     }
-
-
-
-    suspend fun getDiscountCodes(priceRuleId: Long): List<DiscountCode> {
+    suspend fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest): Response<PriceRule> {
+        return apiService.updatePriceRule(priceRuleId, priceRule)
+//        return if (response.isSuccessful) {
+//            Result.success(response.body()?.price_rule ?: error("No price rule returned"))
+//        } else {
+//            Result.failure(Exception("Failed to update price rule: ${response.message()}"))
+//        }
+    }
+    suspend fun getDiscountCodes(priceRuleId: Long): DiscountCodeResponse {
         return apiService.getDiscountCodes(priceRuleId)
     }
 
-    suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCode) {
+    suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest) {
         apiService.createDiscountCode(priceRuleId, discountCode)
     }
 

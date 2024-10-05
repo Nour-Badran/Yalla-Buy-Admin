@@ -1,4 +1,4 @@
-package com.example.yallabuyadmin.coupons
+package com.example.yallabuyadmin.coupons.model
 
 data class PriceRule(
     val id: Long? = null,
@@ -22,8 +22,15 @@ data class priceRuleRequest(
 )
 
 data class DiscountCode(
-    val id: Long,
+    val id: Long? = null,
     val code: String,
-    val usageCount: Int,
-    val createdAt: String
+    val usage_count: Int,
+    val created_at: String
+)
+ data class DiscountCodeResponse(
+     val discount_codes: List<DiscountCode>
+ )
+
+data class DiscountCodeRequest(
+    val discount_code: DiscountCode
 )

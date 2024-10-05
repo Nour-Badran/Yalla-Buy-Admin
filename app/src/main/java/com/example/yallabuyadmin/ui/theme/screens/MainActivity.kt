@@ -7,11 +7,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.yallabuyadmin.coupons.CouponsRemoteDataSource
-import com.example.yallabuyadmin.coupons.CouponsRepository
-import com.example.yallabuyadmin.coupons.CouponsScreen
-import com.example.yallabuyadmin.coupons.CouponsViewModel
-import com.example.yallabuyadmin.coupons.CouponsViewModelFactory
+import com.example.yallabuyadmin.coupons.model.CouponsRemoteDataSource
+import com.example.yallabuyadmin.coupons.model.CouponsRepository
+import com.example.yallabuyadmin.coupons.view.CouponsScreen
+import com.example.yallabuyadmin.coupons.view.DiscountCodesScreen
+import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
+import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModelFactory
 import com.example.yallabuyadmin.menu.model.MenuRemoteDataSource
 import com.example.yallabuyadmin.menu.model.MenuRepository
 import com.example.yallabuyadmin.menu.view.MenuScreen
@@ -35,6 +36,8 @@ class MainActivity : ComponentActivity() {
             var navigateToMenu by remember { mutableStateOf(true) }
             var navigateToInventory by remember { mutableStateOf(false) }
             var navigateToCoupons by remember { mutableStateOf(false) }
+            var navigateToDiscountScreen by remember { mutableStateOf(false) } // New state for discount screen
+            var selectedDiscountId by remember { mutableStateOf<Long?>(null) } // To hold selected discount ID
 
             val viewModel: ProductViewModel = viewModel(factory = ProductViewModelFactory(
                 ProductRepository(
@@ -88,10 +91,28 @@ class MainActivity : ComponentActivity() {
                             })
                         }
                         navigateToCoupons -> {
-                            CouponsScreen(onBack = {
-                                navigateToCoupons = false
-                                navigateToMenu = true
-                            }, viewModel = couponsViewModel)
+                            CouponsScreen(
+                                onBack = {
+                                    navigateToCoupons = false
+                                    navigateToMenu = true
+                                },
+                                onNavigateToDiscount = { discountId ->
+                                    selectedDiscountId = discountId // Set the selected discount ID
+                                    navigateToCoupons = false // Close coupons screen
+                                    navigateToDiscountScreen = true // Navigate to discount screen
+                                },
+                                viewModel = couponsViewModel
+                            )
+                        }
+                        navigateToDiscountScreen -> {
+                            DiscountCodesScreen(
+                                priceRuleId = selectedDiscountId ?: 0, // Pass the priceRuleId
+                                onBack = {
+                                    navigateToDiscountScreen = false
+                                    navigateToCoupons = true // Return to coupons screen
+                                },
+                                viewModel = couponsViewModel // Pass the ViewModel
+                            )
                         }
                         createNewProduct -> {
                             CreateProductScreen(

@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,10 +50,13 @@ fun CreateProductScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Create Product", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
+                title = { Text("Create Product", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Cyan) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 }
             )
@@ -222,6 +226,14 @@ fun CreateProductScreen(
                 }
             }
         }
+    )
+}
+@Preview(showBackground = true)
+@Composable
+fun CreateProductScreenPreview() {
+    CreateProductScreen(
+        onCreateProduct = {},
+        onBack = {}
     )
 }
 

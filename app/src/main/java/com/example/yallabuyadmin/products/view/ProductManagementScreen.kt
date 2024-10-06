@@ -25,10 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.network.ApiState
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
@@ -70,21 +75,18 @@ fun ProductManagementScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Product Management") },
+                title = { Text("Product Management", color = Color.Cyan) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = Color.Black
                 ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToCreate) {
-                        Icon(Icons.Default.Add, contentDescription = "Create Product")
+                        Icon(Icons.Default.Add, contentDescription = "Create Product", tint = Color.Cyan)
                     }
                 }
             )
@@ -182,7 +184,7 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
-                .height(300.dp) // Set a fixed height for uniformity
+                .wrapContentHeight() // Use wrapContentHeight for dynamic height
         ) {
             // Load and display the first image of the product, if available
             product.images.firstOrNull()?.let { image ->
@@ -212,7 +214,7 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
             // Vendor Name
             Text(
                 text = "by ${product.vendor}",
-                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, color = Color.Cyan),
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
@@ -221,12 +223,138 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
             // Product Price
             if (product.variants.isNotEmpty()) {
                 val price = product.variants.first().price
+                val annotatedString = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color.Black)) {
+                        append("Price: \$")
+                    }
+                    withStyle(style = SpanStyle(color = Color.Cyan)) {
+                        append("${price}")
+                    }
+                }
+
                 Text(
-                    text = "Price: $${price}",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, color = MaterialTheme.colorScheme.primary),
+                    text = annotatedString,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
+
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Ratings and Reviews
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "(120 reviews)",
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(5) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color(0xFFFFD700),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        if (it < 4) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+                    }
+                }
+
+
+            }
+
+            Spacer(modifier = Modifier.weight(1f)) // Add weight to push the FAB to the bottom
+
+            // FloatingActionButton
+            FloatingActionButton(
+                onClick = onDelete,
+                containerColor = Color.White,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .wrapContentHeight()
+            ) {
+                if (false) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Icon(painter = painterResource(id = R.drawable.trash),
+                        contentDescription = "Delete Product",tint = Color.Red)
+
+                }
+            }
+        }
+    }
+}
+
+
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun ProductCardPre() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { /*onSelect()*/ },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(16.dp)
+                .height(300.dp) // Set a fixed height for uniformity
+        ) {
+            // Load and display the first image of the product, if available
+
+                Image(
+                    painter = rememberAsyncImagePainter(Icons.Default),
+                    contentDescription = "Product Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.LightGray),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+            // Product Title
+            Text(
+                text = "product.title",
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                maxLines = 2,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Vendor Name
+            Text(
+                text = "by product.vendor",
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Product Price
+
+                Text(
+                    text = "Price:price",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, color = Color.Cyan),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -239,7 +367,7 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
                     Icon(
                         imageVector = Icons.Default.Add, // Replace this with a star icon in a real scenario
                         contentDescription = null,
-                        tint = Color(0xFFFFD700),
+                        tint = Color.Cyan,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -248,25 +376,28 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
             }
 
             Spacer(modifier = Modifier.height(12.dp))
+            FloatingActionButton(
+                onClick = { /*onDelete*/ },
+                containerColor = Color.White,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .wrapContentHeight()
+            ) {
+                if (false) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Icon(painter = painterResource(id = R.drawable.trash),
+                        contentDescription = "Delete Product",tint = Color.Red)
+
+                }
+            }
 
             // Action Button: Delete with FAB
             Box(
                 contentAlignment = Alignment.TopEnd,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                FloatingActionButton(
-                    onClick = onDelete,
-                    containerColor = MaterialTheme.colorScheme.error, // Use containerColor instead of backgroundColor
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .wrapContentHeight()
-                ) {
-                    if (isDeleting) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                    } else {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete Product")
-                    }
-                }
+
             }
         }
     }

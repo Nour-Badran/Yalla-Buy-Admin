@@ -41,11 +41,11 @@ class CouponsRepository(private val remoteDataSource: CouponsRemoteDataSource) {
         remoteDataSource.createDiscountCode(priceRuleId, discountCode)
     }
 
-    suspend fun updateDiscountCode(id: Long, discountCode: DiscountCode) {
-        remoteDataSource.updateDiscountCode(id, discountCode)
+    suspend fun updateDiscountCode(priceRuleId: Long,id: Long, discountCode: DiscountCodeRequest) {
+        remoteDataSource.updateDiscountCode(priceRuleId,id, discountCode)
     }
 
-    suspend fun deleteDiscountCode(id: Long) {
-        remoteDataSource.deleteDiscountCode(id)
+    suspend fun deleteDiscountCode(priceRuleId: Long,id: Long) {
+        remoteDataSource.deleteDiscountCode(priceRuleId,id)
     }
 }

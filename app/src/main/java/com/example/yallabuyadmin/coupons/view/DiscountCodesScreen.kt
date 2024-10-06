@@ -107,7 +107,7 @@ fun DiscountCodesScreen(
                                         Icon(Icons.Default.Edit, contentDescription = "Edit")
                                     }
                                     IconButton(onClick = {
-                                        discountCode.id?.let { viewModel.deleteDiscountCode(it) }
+                                        discountCode.id?.let { viewModel.deleteDiscountCode(priceRuleId,it) }
                                     }) {
                                         Icon(Icons.Default.Delete, contentDescription = "Delete")
                                     }
@@ -134,7 +134,7 @@ fun DiscountCodesScreen(
                         discountCode = selectedDiscountCode,
                         onDismiss = { showEditDialog.value = false },
                         onConfirm = { updatedCode ->
-                            updatedCode.discount_code.id?.let { viewModel.updateDiscountCode(it, updatedCode.discount_code) }
+                            updatedCode.discount_code.id?.let { viewModel.updateDiscountCode(priceRuleId,it, updatedCode) }
                             showEditDialog.value = false
                         }
                     )
@@ -151,7 +151,6 @@ fun DiscountCodeDialog(
     onConfirm: (DiscountCodeRequest) -> Unit
 ) {
     var code by remember { mutableStateOf(discountCode?.code ?: "") }
-    var usageCount by remember { mutableStateOf(discountCode?.usage_count?.toString() ?: "") }
 
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
@@ -173,13 +172,6 @@ fun DiscountCodeDialog(
                     onValueChange = { code = it },
                     label = { Text("Code") }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = usageCount,
-                    onValueChange = { usageCount = it },
-                    label = { Text("Usage Count") },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -190,11 +182,10 @@ fun DiscountCodeDialog(
                     }
                     TextButton(onClick = {
                         val updatedCode = discountCode?.copy(
-                            code = code,
-                            usage_count = usageCount.toLong()
+                            code = code
                         ) ?: DiscountCode(
                             code = code,
-                            usage_count = usageCount.toLong(),
+                            usage_count = 0,
                             created_at = ""
                         )
                         onConfirm(DiscountCodeRequest(updatedCode))

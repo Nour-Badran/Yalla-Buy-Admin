@@ -68,14 +68,16 @@ interface ApiService {
         @Body discountCode: DiscountCodeRequest
     )
 
-    @PUT("discount_codes/{id}.json")
+    @PUT("price_rules/{price_rule_id}/discount_codes/{id}.json")
     suspend fun updateDiscountCode(
+        @Path("price_rule_id") priceRuleId: Long,
         @Path("id") id: Long,
-        @Body discountCode: DiscountCode
+        @Body discountCode: DiscountCodeRequest
     )
 
-    @DELETE("discount_codes/{id}.json")
+    @DELETE("price_rules/{price_rule_id}/discount_codes/{id}.json")
     suspend fun deleteDiscountCode(
+        @Path("price_rule_id") priceRuleId: Long,
         @Path("id") id: Long
     )
 }

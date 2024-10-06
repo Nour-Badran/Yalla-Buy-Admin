@@ -108,22 +108,22 @@ class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewM
         }
     }
 
-    fun updateDiscountCode(id: Long, discountCode: DiscountCode) {
+    fun updateDiscountCode(priceRuleId: Long,id: Long, discountCode: DiscountCodeRequest) {
         viewModelScope.launch {
             try {
-                couponsRepository.updateDiscountCode(id, discountCode)
-                // Optionally refresh the list
+                couponsRepository.updateDiscountCode(priceRuleId,id, discountCode)
+                fetchDiscountCodes(priceRuleId)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    fun deleteDiscountCode(id: Long) {
+    fun deleteDiscountCode(priceRuleId: Long,id: Long) {
         viewModelScope.launch {
             try {
-                couponsRepository.deleteDiscountCode(id)
-                fetchDiscountCodes(priceRuleId!!) // Refresh discount codes
+                couponsRepository.deleteDiscountCode(priceRuleId,id)
+                fetchDiscountCodes(priceRuleId) // Refresh discount codes
             } catch (e: Exception) {
                 e.printStackTrace()
             }

@@ -2,6 +2,7 @@ package com.example.yallabuyadmin.coupons.model
 
 import android.util.Log
 import com.example.yallabuyadmin.network.ApiService
+import retrofit2.HttpException
 import retrofit2.Response
 
 class CouponsRemoteDataSource(private val apiService: ApiService) {
@@ -47,11 +48,21 @@ class CouponsRemoteDataSource(private val apiService: ApiService) {
         apiService.createDiscountCode(priceRuleId, discountCode)
     }
 
-    suspend fun updateDiscountCode(id: Long, discountCode: DiscountCode) {
-        apiService.updateDiscountCode(id, discountCode)
+    suspend fun updateDiscountCode(priceRuleId: Long,id: Long, discountCode: DiscountCodeRequest) {
+        try {
+            Log.d("item",discountCode.toString())
+            apiService.updateDiscountCode(priceRuleId,id, discountCode)
+            Log.d("UpdateDiscountCode", "Discount code updated successfully.")
+        } catch (e: HttpException) {
+            Log.e("UpdateError", "HTTP Error: ${e.code()} - ${e.message()}")
+        } catch (e: Exception) {
+            Log.e("UpdateError", "Error updating discount code: ${e.message}")
+        }
     }
 
-    suspend fun deleteDiscountCode(id: Long) {
-        apiService.deleteDiscountCode(id)
+
+
+    suspend fun deleteDiscountCode(priceRuleId: Long,id: Long) {
+        apiService.deleteDiscountCode(priceRuleId,id)
     }
 }

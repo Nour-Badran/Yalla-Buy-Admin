@@ -15,6 +15,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,14 +25,14 @@ fun InventoryScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Inventory Management") },
+                title = { Text("Inventory Management", color = Color.Cyan) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = Color.Black
                 )
             )
         },
@@ -47,3 +49,11 @@ fun InventoryScreen(onBack: () -> Unit) {
         }
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun InventoryScreenPreview() {
+    InventoryScreen(onBack = { /* */ })
+}
+
+

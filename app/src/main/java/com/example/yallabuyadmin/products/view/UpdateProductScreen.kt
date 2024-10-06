@@ -16,11 +16,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.yallabuyadmin.products.model.Product
+import com.example.yallabuyadmin.products.model.Variant
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -46,10 +48,13 @@ fun UpdateProductScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Update Product", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
+                title = { Text("Update Product", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Cyan) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 }
             )
@@ -73,7 +78,6 @@ fun UpdateProductScreen(
                                 .fillMaxWidth()
                                 .height(200.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(Color.LightGray)
                                 .padding(8.dp),
                             contentScale = ContentScale.FillBounds
                         )
@@ -93,7 +97,8 @@ fun UpdateProductScreen(
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Column(
                             modifier = Modifier
@@ -177,13 +182,13 @@ fun UpdateProductScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                         enabled = !isLoading // Disable the button while loading
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                         } else {
-                            Text("Update Product", fontSize = 18.sp)
+                            Text("Update Product", fontSize = 18.sp, color = Color.Cyan)
                         }
                     }
                 }
@@ -227,3 +232,4 @@ fun UpdateProductScreen(
         }
     )
 }
+

@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yallabuyadmin.coupons.model.CouponsRemoteDataSource
 import com.example.yallabuyadmin.coupons.model.CouponsRepository
@@ -151,4 +152,23 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun MenuScreenPreview() {
+    val dummyInventoryCount = 5
+    val dummyProductsCount = 10
+    val dummyCouponsCount = 2
+
+    MenuScreen(
+        onNavigateToProducts = {},
+        onNavigateToInventory = {},
+        onNavigateToCoupons = {},
+        onLogout = {},
+        inventoryCount = dummyInventoryCount.toString(),
+        productsCount = dummyProductsCount.toString(),
+        couponsCount = dummyCouponsCount.toString()
+    )
 }

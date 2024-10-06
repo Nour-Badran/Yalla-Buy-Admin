@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,7 +34,7 @@ fun MenuScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(Color.White)
             .padding(16.dp)
     ) {
         Column(
@@ -44,19 +46,19 @@ fun MenuScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            IconButton(onClick = onLogout) {
+            /*IconButton(onClick = onLogout) {
                 Icon(
                     painter = painterResource(id = R.drawable.img),
                     contentDescription = "Logout",
                     tint = MaterialTheme.colorScheme.primary
                 )
-            }
+            }*/
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Start managing your business",
-                style = MaterialTheme.typography.bodyLarge,
+                text = "Start managing your business", fontSize = 24.sp,
+                color = Color.Cyan, fontWeight = FontWeight.Normal,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
@@ -95,11 +97,11 @@ fun CircularImageWithText() {
     val imageSize = 80.dp
     Box(
         modifier = Modifier
-            .size(imageSize)
-            .background(MaterialTheme.colorScheme.primary, shape = androidx.compose.foundation.shape.CircleShape)
+            .padding(26.dp)
+            .size(100.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.img_1),
+            painter = painterResource(id = R.drawable.m),
             contentDescription = "Profile Image",
             modifier = Modifier.fillMaxSize()
         )
@@ -117,7 +119,7 @@ fun EnhancedButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
@@ -129,11 +131,25 @@ fun EnhancedButton(
                 modifier = Modifier.weight(1f) // Allow text to take available space
             ) {
                 Text(text = title, fontSize = 18.sp, color = Color.White) // Title text
-                Text(text = description, fontSize = 12.sp, color = Color.LightGray) // Description text
+                Text(text = description, fontSize = 12.sp, color = Color.Cyan) // Description text
             }
 
             // Displaying count on the right side
             Text(text = count, fontSize = 20.sp, color = Color.White) // Larger count text
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewMenuScreen() {
+    MenuScreen(
+        onNavigateToProducts = {},
+        onNavigateToInventory = {},
+        onNavigateToCoupons = {},
+        onLogout = {},
+        inventoryCount = "10",
+        productsCount = "25",
+        couponsCount = "5"
+    )
 }

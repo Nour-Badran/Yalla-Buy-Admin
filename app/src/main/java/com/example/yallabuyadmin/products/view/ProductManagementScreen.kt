@@ -52,6 +52,7 @@ fun ProductManagementScreen(
     var snackbarVisible by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
+    var searchQuery by remember { mutableStateOf("") } // Add state for search query
 
     LaunchedEffect(Unit) {
         viewModel.getAllProducts()
@@ -101,42 +102,58 @@ fun ProductManagementScreen(
             )
         }},
         content = { padding ->
-            when (productsState) {
-                is ApiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+            Column(modifier = Modifier.padding(padding)) {
+                // Search Bar
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search Products") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+
+                when (productsState) {
+                    is ApiState.Loading -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
                     }
-                }
-                is ApiState.Error -> {
-                    val errorMessage = (productsState as ApiState.Error).message
-                    Text(
-                        text = errorMessage,
-                        color = Color.Red,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-                is ApiState.Success -> {
-                    val productList = (productsState as ApiState.Success<List<Product>>).data
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2), // Specify 2 columns
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp) // Adjust space between columns
-                    ) {
-                        items(productList) { product ->
-                            ProductCard(
-                                product = product,
-                                onSelect = {
-                                    onNavigateToUpdate(product)
-                                },
-                                onDelete = {
-                                    productToDelete = product
-                                },
-                                isDeleting = viewModel.deletingProducts[product.id] ?: false
-                            )
+                    is ApiState.Error -> {
+                        val errorMessage = (productsState as ApiState.Error).message
+                        Text(
+                            text = errorMessage,
+                            color = Color.Red,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                    is ApiState.Success -> {
+                        val productList = (productsState as ApiState.Success<List<Product>>).data
+                        val filteredProducts = productList.filter {
+                            it.title.contains(searchQuery, ignoreCase = true) ||
+                                    it.vendor.contains(searchQuery, ignoreCase = true)
+                        }
+
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(filteredProducts) { product ->
+                                ProductCard(
+                                    product = product,
+                                    onSelect = {
+                                        onNavigateToUpdate(product)
+                                    },
+                                    onDelete = {
+                                        productToDelete = product
+                                    },
+                                    isDeleting = viewModel.deletingProducts[product.id] ?: false
+                                )
+                            }
                         }
                     }
                 }
@@ -168,7 +185,6 @@ fun ProductManagementScreen(
         )
     }
 }
-
 
 @Composable
 fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, isDeleting: Boolean) {

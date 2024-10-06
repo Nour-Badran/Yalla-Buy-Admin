@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 import com.example.yallabuyadmin.coupons.model.DiscountCode
@@ -72,10 +73,13 @@ fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewM
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Coupons Management") },
+                title = { Text("Product Management", color = Color.Cyan) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 }
             )

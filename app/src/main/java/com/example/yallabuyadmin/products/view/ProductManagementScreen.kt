@@ -164,22 +164,21 @@ fun ProductManagementScreen(
     // Confirmation dialog for deletion
     productToDelete?.let { product ->
         AlertDialog(
+            containerColor = Color.White,
             onDismissRequest = { productToDelete = null },
             title = { Text("Confirm Delete") },
             text = { Text("Are you sure you want to delete '${product.title}'? This action cannot be undone.") },
             confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.deleteProduct(product.id!!)
-                        productToDelete = null
-                    }
-                ) {
-                    Text("Delete")
+                TextButton(onClick = {
+                    viewModel.deleteProduct(product.id!!)
+                    productToDelete = null
+                }) {
+                    Text("Delete", color = Color.Red)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { productToDelete = null }) {
-                    Text("Cancel")
+                    Text("Cancel", color = Color.Black)
                 }
             }
         )

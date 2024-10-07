@@ -1,6 +1,8 @@
 package com.example.yallabuyadmin.products.view
 
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,7 +50,28 @@ fun UpdateProductScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val successMessage by viewModel.successMessage.collectAsState() // Collect success message
     val coroutineScope = rememberCoroutineScope() // Coroutine scope for launching coroutines
+    // State for image uploading
+    var isUploadingImage by remember { mutableStateOf(false) }
 
+    // Coroutine scope for handling async tasks
+    val coroutineScope2 = rememberCoroutineScope()
+
+    // Image picker
+    val context = LocalContext.current
+    val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            isUploadingImage = true // Set uploading state to true
+            coroutineScope2.launch {
+                val uploadedImageUrl = uploadImage(context, it)
+                isUploadingImage = false // Set uploading state to false
+                if (uploadedImageUrl != null) {
+                    imageUrl = uploadedImageUrl // Update image URL with the uploaded URL
+                } else {
+                    // Handle upload failure (e.g., show a Snackbar)
+                }
+            }
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -69,34 +93,57 @@ fun UpdateProductScreen(
                         .fillMaxSize()
                         .padding(padding)
                         .padding(16.dp)
+                        .background(Color.White)
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (imageUrl.isNotBlank()) {
-                        Crossfade(targetState = imageUrl) { currentImageUrl ->
-                            Image(
-                                painter = rememberAsyncImagePainter(currentImageUrl),
-                                contentDescription = "Product Image",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .padding(8.dp),
-                                contentScale = ContentScale.FillBounds
-                            )
+                    if (isUploadingImage) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(16.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
                         }
+                    } else if (imageUrl.isNotBlank()) {
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUrl),
+                            contentDescription = "Product Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .padding(8.dp),
+                            contentScale = ContentScale.FillBounds
+                        )
                     } else {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(200.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(Color.LightGray)
                                 .padding(8.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text("No Image Available", fontSize = 18.sp, color = Color.Gray)
+                        }
+                    }
+
+                    // Button to select image
+                    Button(
+                        onClick = {
+                            imagePickerLauncher.launch("image/*")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        enabled = !isUploadingImage
+                    ) {
+                        if (isUploadingImage) {
+                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                        } else {
+                            Text("Select Image", fontSize = 18.sp)
                         }
                     }
 
@@ -116,7 +163,13 @@ fun UpdateProductScreen(
                                 onValueChange = { productName = it },
                                 label = { Text("Product Name", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
 
                             OutlinedTextField(
@@ -124,7 +177,13 @@ fun UpdateProductScreen(
                                 onValueChange = { vendor = it },
                                 label = { Text("Vendor", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
 
                             OutlinedTextField(
@@ -132,42 +191,74 @@ fun UpdateProductScreen(
                                 onValueChange = { productType = it },
                                 label = { Text("Product Type", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
-
-                            variants.forEachIndexed { index, variant ->
-                                Column(modifier = Modifier.fillMaxWidth()) {
-                                    OutlinedTextField(
-                                        value = variant.title,
-                                        onValueChange = { updatedTitle ->
-                                            variants = variants.toMutableList().apply {
-                                                this[index] = this[index].copy(title = updatedTitle)
-                                            }
-                                        },
-                                        label = { Text("Variant ${index + 1} Title", fontWeight = FontWeight.Bold) },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        singleLine = true
+                            if (variants.isNotEmpty()) {
+                                val firstVariant = variants.first()
+                                OutlinedTextField(
+                                    value = firstVariant.price,
+                                    onValueChange = { updatedPrice ->
+                                        variants = variants.toMutableList().apply {
+                                            this[0] = this[0].copy(price = updatedPrice) // Update only the first variant
+                                        }
+                                    },
+                                    label = { Text("Price", fontWeight = FontWeight.Bold) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true,
+                                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        focusedBorderColor = Color.Black,
+                                        unfocusedBorderColor = Color.Black,
+                                        cursorColor = Color.Black,
+                                        focusedLabelColor = Color.Black
                                     )
-                                    OutlinedTextField(
-                                        value = variant.price,
-                                        onValueChange = { updatedPrice ->
-                                            variants = variants.toMutableList().apply {
-                                                this[index] = this[index].copy(price = updatedPrice)
-                                            }
-                                        },
-                                        label = { Text("Variant ${index + 1} Price", fontWeight = FontWeight.Bold) },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        singleLine = true
-                                    )
-                                }
+                                )
                             }
+
+//                            variants.forEachIndexed { index, variant ->
+//                                Column(modifier = Modifier.fillMaxWidth()) {
+//                                    OutlinedTextField(
+//                                        value = variant.title,
+//                                        onValueChange = { updatedTitle ->
+//                                            variants = variants.toMutableList().apply {
+//                                                this[index] = this[index].copy(title = updatedTitle)
+//                                            }
+//                                        },
+//                                        label = { Text("Variant ${index + 1} Title", fontWeight = FontWeight.Bold) },
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        singleLine = true
+//                                    )
+//                                    OutlinedTextField(
+//                                        value = variant.price,
+//                                        onValueChange = { updatedPrice ->
+//                                            variants = variants.toMutableList().apply {
+//                                                this[index] = this[index].copy(price = updatedPrice)
+//                                            }
+//                                        },
+//                                        label = { Text("Variant ${index + 1} Price", fontWeight = FontWeight.Bold) },
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        singleLine = true
+//                                    )
+//                                }
+//                            }
 
                             OutlinedTextField(
                                 value = imageUrl,
                                 onValueChange = { imageUrl = it },
                                 label = { Text("Image URL", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
                         }
                     }
@@ -193,7 +284,7 @@ fun UpdateProductScreen(
                         if (isLoading) {
                             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                         } else {
-                            Text("Update Product", fontSize = 18.sp, color = Color.Cyan)
+                            Text("Update Product", fontSize = 18.sp, color = Color.White)
                         }
                     }
                 }

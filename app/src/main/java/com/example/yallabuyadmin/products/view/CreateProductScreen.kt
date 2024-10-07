@@ -1,8 +1,12 @@
 package com.example.yallabuyadmin.products.view
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +31,15 @@ import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 import com.example.yallabuyadmin.products.model.Variant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import com.example.yallabuyadmin.R
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
+import com.example.yallabuyadmin.products.model.Image as ProductImage
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,24 +49,47 @@ fun CreateProductScreen(
     onCreateProduct: () -> Unit,
     onBack: () -> Unit
 ) {
+    // State for product details
     var productName by remember { mutableStateOf("") }
     var vendor by remember { mutableStateOf("") }
     var productType by remember { mutableStateOf("") }
     var variants by remember { mutableStateOf("") }
     var imageUrl by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
+
+    // State for loading and messages
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val successMessage by viewModel.successMessage.collectAsState()
+
+    // State for image uploading
+    var isUploadingImage by remember { mutableStateOf(false) }
+
+    // Coroutine scope for handling async tasks
     val coroutineScope = rememberCoroutineScope()
+
+    // Image picker
+    val context = LocalContext.current
+    val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            isUploadingImage = true // Set uploading state to true
+            coroutineScope.launch {
+                val uploadedImageUrl = uploadImage(context, it)
+                isUploadingImage = false // Set uploading state to false
+                if (uploadedImageUrl != null) {
+                    imageUrl = uploadedImageUrl // Update image URL with the uploaded URL
+                } else {
+                    // Handle upload failure (e.g., show a Snackbar)
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Create Product", fontSize = 20.sp, color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
-                ),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -73,7 +109,18 @@ fun CreateProductScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (imageUrl.isNotBlank()) {
+                    // Image section with picker button
+                    if (isUploadingImage) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(16.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                        }
+                    } else if (imageUrl.isNotBlank()) {
                         Image(
                             painter = rememberAsyncImagePainter(imageUrl),
                             contentDescription = "Product Image",
@@ -97,6 +144,22 @@ fun CreateProductScreen(
                         }
                     }
 
+                    // Button to select image
+                    Button(
+                        onClick = {
+                            imagePickerLauncher.launch("image/*")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        enabled = !isUploadingImage
+                    ) {
+                        if (isUploadingImage) {
+                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                        } else {
+                            Text("Select Image", fontSize = 18.sp)
+                        }
+                    }
+
+                    // Other input fields
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -113,7 +176,13 @@ fun CreateProductScreen(
                                 onValueChange = { productName = it },
                                 label = { Text("Product Name", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
 
                             OutlinedTextField(
@@ -121,7 +190,13 @@ fun CreateProductScreen(
                                 onValueChange = { vendor = it },
                                 label = { Text("Vendor", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
 
                             OutlinedTextField(
@@ -129,15 +204,34 @@ fun CreateProductScreen(
                                 onValueChange = { productType = it },
                                 label = { Text("Product Type", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
 
+//                    OutlinedTextField(
+//                        value = variants,
+//                        onValueChange = { variants = it },
+//                        label = { Text("Variants (Comma separated)", fontWeight = FontWeight.Bold) },
+//                        modifier = Modifier.fillMaxWidth(),
+//                        singleLine = true
+//                    )
                             OutlinedTextField(
-                                value = variants,
-                                onValueChange = { variants = it },
-                                label = { Text("Variants (Comma separated)", fontWeight = FontWeight.Bold) },
+                                value = price,
+                                onValueChange = { price = it },
+                                label = { Text("Price", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
 
                             OutlinedTextField(
@@ -145,19 +239,18 @@ fun CreateProductScreen(
                                 onValueChange = { imageUrl = it },
                                 label = { Text("Image URL", fontWeight = FontWeight.Bold) },
                                 modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
+                                singleLine = true,
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color.Black,
+                                    unfocusedBorderColor = Color.Black,
+                                    cursorColor = Color.Black,
+                                    focusedLabelColor = Color.Black
+                                )
                             )
 
-                            OutlinedTextField(
-                                value = price,
-                                onValueChange = { price = it },
-                                label = { Text("Price", fontWeight = FontWeight.Bold) },
-                                modifier = Modifier.fillMaxWidth(),
-                                singleLine = true
-                            )
+
                         }
                     }
-
                     Button(
                         onClick = {
                             val variantList = variants.split(",").map { title ->
@@ -169,7 +262,7 @@ fun CreateProductScreen(
                                 vendor = vendor,
                                 product_type = productType,
                                 tags = "Sample Tag",
-                                images = listOf(com.example.yallabuyadmin.products.model.Image(src = imageUrl)),
+                                images = listOf(ProductImage(src = imageUrl)),
                                 variants = variantList
                             )
                             viewModel.createProduct(newProduct)
@@ -221,13 +314,32 @@ fun CreateProductScreen(
                             }
                         }
                     ) {
-                        Text("Error: $errorMessage", color = Color.White)
+                        Text("Error: $errorMessage", color = Color.Red)
                     }
                 }
             }
         }
     )
 }
+
+
+//upload an image and get the URL
+suspend fun uploadImage(context: Context, uri: Uri): String? {
+    return try {
+        val storageRef: StorageReference = FirebaseStorage.getInstance().reference
+        val imageRef: StorageReference = storageRef.child("images/${UUID.randomUUID()}.jpg") // Create a unique filename
+
+        // Upload the image
+        imageRef.putFile(uri).await() // Await for the upload to complete
+
+        // Get the URL of the uploaded image
+        imageRef.downloadUrl.await().toString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null // Return null if there is an error
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun CreateProductScreenPreview() {

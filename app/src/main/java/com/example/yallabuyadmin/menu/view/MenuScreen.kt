@@ -85,32 +85,29 @@ fun MenuScreen(
                         .fillMaxWidth()
                         .padding(bottom = 16.dp),
                     shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(4.dp), // Moderate elevation for a subtle shadow
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFECEFF1)) // Light grey for background
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFECEFF1))
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically, // Center align the content
-                        horizontalArrangement = Arrangement.SpaceBetween // Space items evenly
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Welcoming icon
                         Icon(
-                            painter = painterResource(id = R.drawable.img_3), // Your welcome icon
+                            painter = painterResource(id = R.drawable.img_3),
                             contentDescription = null,
-                            modifier = Modifier.size(40.dp), // Slightly larger icon for better visibility
-                            tint = Color.Black // Change to a primary theme color
+                            modifier = Modifier.size(40.dp),
+                            tint = Color.Black
                         )
 
-                        // Centered greeting message
                         Text(
                             text = greetingMessage,
                             style = MaterialTheme.typography.headlineMedium,
                             color = Color.Black,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.weight(1f) // Allow this text to take available space
+                            modifier = Modifier.weight(1f)
                         )
 
-                        // Logout button
                         IconButton(onClick = { showLogoutConfirmation = true }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.img_2),
@@ -130,15 +127,15 @@ fun MenuScreen(
                     text = { Text("Are you sure you want to log out?") },
                     confirmButton = {
                         TextButton(onClick = {
-                            onLogout() // Call the logout function
-                            showLogoutConfirmation = false // Close the dialog
+                            onLogout()
+                            showLogoutConfirmation = false
                         }) {
                             Text("Logout", color = Color.Red)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = {
-                            showLogoutConfirmation = false // Close the dialog
+                            showLogoutConfirmation = false
                         }) {
                             Text("Cancel", color = Color.Black)
                         }
@@ -204,13 +201,13 @@ fun CircularImageWithText() {
         modifier = Modifier
             .padding(26.dp)
             .size(100.dp)
-            .clip(CircleShape) // Optional: Makes the image circular
-            .background(Color(0xFFBDBDBD)) // Gray background for the image
+            .clip(CircleShape)
+            .background(Color(0xFFBDBDBD))
     ) {
         Image(
-            painter = painterResource(id = R.drawable.m), // Update with your image
+            painter = painterResource(id = R.drawable.m),
             contentDescription = "Profile Image",
-            modifier = Modifier.fillMaxSize().clip(CircleShape) // Clip the image to a circular shape
+            modifier = Modifier.fillMaxSize().clip(CircleShape)
         )
     }
 }

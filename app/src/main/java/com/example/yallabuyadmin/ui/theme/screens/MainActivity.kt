@@ -8,17 +8,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.yallabuyadmin.FirebaseAuthun
-import com.example.yallabuyadmin.LogInScreen
-import com.example.yallabuyadmin.SignupScreen
+import com.example.yallabuyadmin.auth.FirebaseAuthun
+import com.example.yallabuyadmin.auth.LogInScreen
+import com.example.yallabuyadmin.auth.SignupScreen
 import com.example.yallabuyadmin.coupons.model.CouponsRemoteDataSource
 import com.example.yallabuyadmin.coupons.model.CouponsRepository
 import com.example.yallabuyadmin.coupons.view.CouponsScreen
 import com.example.yallabuyadmin.coupons.view.DiscountCodesScreen
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModelFactory
+import com.example.yallabuyadmin.inventory.InventoryScreen
 import com.example.yallabuyadmin.menu.model.MenuRemoteDataSource
 import com.example.yallabuyadmin.menu.model.MenuRepository
 import com.example.yallabuyadmin.menu.view.MenuScreen
@@ -32,7 +32,6 @@ import com.example.yallabuyadmin.products.model.ProductRepository
 import com.example.yallabuyadmin.products.view.CreateProductScreen
 import com.example.yallabuyadmin.products.view.ProductManagementScreen
 import com.example.yallabuyadmin.products.view.UpdateProductScreen
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {

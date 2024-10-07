@@ -1,4 +1,4 @@
-package com.example.yallabuyadmin.ui.theme.screens
+package com.example.yallabuyadmin.inventory
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

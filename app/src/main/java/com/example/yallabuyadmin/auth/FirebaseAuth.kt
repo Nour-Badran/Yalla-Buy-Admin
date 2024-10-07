@@ -1,9 +1,9 @@
-package com.example.yallabuyadmin
+package com.example.yallabuyadmin.auth
 
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.navigation.NavController
+import com.example.yallabuyadmin.R
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException

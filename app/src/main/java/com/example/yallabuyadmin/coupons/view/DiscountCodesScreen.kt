@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -27,6 +28,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.window.Dialog
 import com.example.yallabuyadmin.coupons.model.DiscountCode
 import com.example.yallabuyadmin.coupons.model.DiscountCodeRequest
+import com.example.yallabuyadmin.coupons.model.PriceRule
+import com.example.yallabuyadmin.network.ApiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,55 +69,102 @@ fun DiscountCodesScreen(
         },
         content = { padding ->
             Box(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(discountCodes) { discountCode ->
-                        Card(
+                when (discountCodes) {
+                    is ApiState.Loading -> {
+                        // Show loading indicator
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.Black)
+                    }
+                    is ApiState.Success -> {
+                        val discountCodes = (discountCodes as ApiState.Success<List<DiscountCode>>).data
+
+                        LazyColumn(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            border = BorderStroke(1.dp,Color.Black)
+                                .fillMaxSize()
+                                .padding(padding)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .padding(16.dp)
-                            ) {
-                                Text(
-                                    text = "Code: ${discountCode.code}",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "Usage Count: ${discountCode.usage_count}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                // Add Edit and Delete buttons
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End
+                            items(discountCodes) { discountCode ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                                    border = BorderStroke(1.dp, Color.Black)
                                 ) {
-                                    IconButton(onClick = {
-                                        selectedDiscountCode = discountCode
-                                        showEditDialog.value = true
-                                    }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit")
-                                    }
-                                    IconButton(onClick = {
-                                        discountCode.id?.let { viewModel.deleteDiscountCode(priceRuleId,it) }
-                                    }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                                    Column(
+                                        modifier = Modifier.padding(16.dp)
+                                    ) {
+                                        Text(
+                                            text = "Code: ${discountCode.code}",
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = "Usage Count: ${discountCode.usage_count}",
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.End
+                                        ) {
+                                            TextButton(onClick = {
+                                                selectedDiscountCode = discountCode
+                                                showEditDialog.value = true
+                                            }) {
+                                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Black)
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text("Edit", color = Color.Black)
+                                            }
+                                            TextButton(onClick = {
+                                                showDeleteConfirmation = true
+                                            }) {
+                                                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text("Delete", color = Color.Red)
+                                            }
+                                        }
+
+                                        if (showDeleteConfirmation) {
+                                            AlertDialog(
+                                                containerColor = Color.White,
+                                                onDismissRequest = { showDeleteConfirmation = false },
+                                                title = { Text("Confirm Delete") },
+                                                text = { Text("Are you sure you want to delete this discount code?") },
+                                                confirmButton = {
+                                                    TextButton(onClick = {
+                                                        discountCode.id?.let {
+                                                            viewModel.deleteDiscountCode(priceRuleId, it)
+                                                            viewModel.fetchDiscountCodes(priceRuleId)
+                                                        }
+                                                        showDeleteConfirmation = false
+                                                    }) {
+                                                        Text("Delete", color = Color.Red)
+                                                    }
+                                                },
+                                                dismissButton = {
+                                                    TextButton(onClick = { showDeleteConfirmation = false }) {
+                                                        Text("Cancel", color = Color.Black)
+                                                    }
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
+                    }
+                    is ApiState.Error -> {
+                        val errorMessage = (discountCodes as ApiState.Error).message
+                        Text(
+                            text = errorMessage,
+                            color = Color.Red,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
                     }
                 }
 
@@ -135,16 +185,18 @@ fun DiscountCodesScreen(
                         discountCode = selectedDiscountCode,
                         onDismiss = { showEditDialog.value = false },
                         onConfirm = { updatedCode ->
-                            updatedCode.discount_code.id?.let { viewModel.updateDiscountCode(priceRuleId,it, updatedCode) }
+                            updatedCode.discount_code.id?.let { viewModel.updateDiscountCode(priceRuleId, it, updatedCode) }
                             showEditDialog.value = false
                         }
                     )
                 }
             }
         }
+
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscountCodeDialog(
     discountCode: DiscountCode? = null,
@@ -156,7 +208,8 @@ fun DiscountCodeDialog(
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(
             shape = MaterialTheme.shapes.medium,
-            tonalElevation = 4.dp
+            tonalElevation = 4.dp,
+            color = Color.White
         ) {
             Column(
                 modifier = Modifier
@@ -169,6 +222,9 @@ fun DiscountCodeDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White
+                    ),
                     value = code,
                     onValueChange = { code = it },
                     label = { Text("Code") }
@@ -179,7 +235,7 @@ fun DiscountCodeDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = { onDismiss() }) {
-                        Text("Cancel")
+                        Text("Cancel",color=Color.Red)
                     }
                     TextButton(onClick = {
                         val updatedCode = discountCode?.copy(
@@ -191,7 +247,7 @@ fun DiscountCodeDialog(
                         )
                         onConfirm(DiscountCodeRequest(updatedCode))
                     }) {
-                        Text("Confirm")
+                        Text("Confirm", color = Color.Black)
                     }
                 }
             }

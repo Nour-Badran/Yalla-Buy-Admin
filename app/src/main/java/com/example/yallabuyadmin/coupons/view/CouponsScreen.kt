@@ -29,13 +29,18 @@ import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 import com.example.yallabuyadmin.coupons.model.DiscountCode
 import com.example.yallabuyadmin.coupons.model.PriceRule
 import com.example.yallabuyadmin.coupons.model.priceRuleRequest
+import com.example.yallabuyadmin.network.ApiState
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewModel: CouponsViewModel) {
+fun CouponsScreen(
+    onBack: () -> Unit,
+    onNavigateToDiscount: (Long) -> Unit,
+    viewModel: CouponsViewModel
+) {
     val discountCodes by viewModel.discountCodes.collectAsState()
     val priceRules by viewModel.priceRules.collectAsState()
     // State for dialogs
@@ -116,98 +121,142 @@ fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewM
             ) {
                 //Text("Price Rules", style = MaterialTheme.typography.titleLarge)
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(priceRules) { priceRule ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            border = BorderStroke(1.dp, Color.Black)
+                when (priceRules) {
+                    is ApiState.Loading -> {
+                        // Show a loading indicator
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
-                            ) {
-                                // Title
-                                Text(
-                                    text = priceRule.title,
-                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = Color.Black // Primary color for emphasis
-                                )
-
-                                // Discount Value
-                                Text(
-                                    text = "Discount: ${priceRule.value}%",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF616161) // Darker gray for readability
-                                )
-
-                                // Starts At
-                                val startDateTime = ZonedDateTime.parse(priceRule.starts_at)
-                                val formattedStartDateTime = startDateTime.format(DateTimeFormatter.ofPattern("dd MMMM, yyyy, hh:mm a"))
-                                Text(
-                                    text = "Starts At: $formattedStartDateTime",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF757575) // Subtle text color for less emphasis
-                                )
-
-                                // Ends At
-                                val endDateTime = ZonedDateTime.parse(priceRule.ends_at)
-                                val formattedEndDateTime = endDateTime.format(DateTimeFormatter.ofPattern("dd MMMM, yyyy, hh:mm a"))
-                                Text(
-                                    text = "Ends At: $formattedEndDateTime",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF757575)
-                                )
-
-                                // Action buttons
-                                Divider(
-                                    modifier = Modifier.padding(vertical = 8.dp),
-                                    color = Color(0xFFE0E0E0)
-                                ) // Divider to visually separate content from actions
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween // Arrange buttons evenly
+                            CircularProgressIndicator(color = Color.Black)
+                        }
+                    }
+                    is ApiState.Success -> {
+                        val priceRules = (priceRules as ApiState.Success<List<PriceRule>>).data
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(priceRules) { priceRule ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                                    border = BorderStroke(1.dp, Color.Black)
                                 ) {
-                                    TextButton(onClick = {
-                                        currentPriceRule = priceRule // Set the current price rule for editing
-                                        showPriceRuleDialog = true // Show the dialog
-                                    }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Black)
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text("Edit", color = Color.Black)
-                                    }
-                                    TextButton(onClick = {
-                                        viewModel.deletePriceRule(priceRule.id!!)
-                                    }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text("Delete", color = Color.Red)
-                                    }
-                                    TextButton(onClick = {
-                                        onNavigateToDiscount(priceRule.id!!)
-                                    }) {
-                                        Icon(Icons.Default.PlayArrow, contentDescription = "Apply", tint = Color.Black)
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text("Coupons", color = Color.Black)
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        // Title
+                                        Text(
+                                            text = priceRule.title,
+                                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                            color = Color.Black
+                                        )
+                                        // Discount Value
+                                        Text(
+                                            text = "Discount: ${priceRule.value}%",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFF616161)
+                                        )
+                                        // Starts At
+                                        val startDateTime = ZonedDateTime.parse(priceRule.starts_at)
+                                        val formattedStartDateTime = startDateTime.format(DateTimeFormatter.ofPattern("dd MMMM, yyyy, hh:mm a"))
+                                        Text(
+                                            text = "Starts At: $formattedStartDateTime",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF757575)
+                                        )
+                                        // Ends At
+                                        val endDateTime = ZonedDateTime.parse(priceRule.ends_at)
+                                        val formattedEndDateTime = endDateTime.format(DateTimeFormatter.ofPattern("dd MMMM, yyyy, hh:mm a"))
+                                        Text(
+                                            text = "Ends At: $formattedEndDateTime",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Color(0xFF757575)
+                                        )
+                                        // Action buttons
+                                        Divider(
+                                            modifier = Modifier.padding(vertical = 8.dp),
+                                            color = Color(0xFFE0E0E0)
+                                        )
+                                        var showDeleteConfirmation by remember { mutableStateOf(false) }
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            TextButton(onClick = {
+                                                currentPriceRule = priceRule // Set the current price rule for editing
+                                                showPriceRuleDialog = true // Show the dialog
+                                            }) {
+                                                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Black)
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text("Edit", color = Color.Black)
+                                            }
+                                            TextButton(onClick = {
+                                                showDeleteConfirmation = true
+                                            }) {
+                                                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text("Delete", color = Color.Red)
+                                            }
+                                            TextButton(onClick = {
+                                                onNavigateToDiscount(priceRule.id!!)
+                                            }) {
+                                                Icon(Icons.Default.PlayArrow, contentDescription = "Apply", tint = Color.Black)
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text("Coupons", color = Color.Black)
+                                            }
+                                        }
+
+                                        if (showDeleteConfirmation) {
+                                            AlertDialog(
+                                                containerColor = Color.White,
+                                                onDismissRequest = { showDeleteConfirmation = false },
+                                                title = { Text("Confirm Delete") },
+                                                text = { Text("Are you sure you want to delete this price rule?") },
+                                                confirmButton = {
+                                                    TextButton(onClick = {
+                                                        viewModel.deletePriceRule(priceRule.id!!)
+                                                        showDeleteConfirmation = false
+                                                    }) {
+                                                        Text("Delete", color = Color.Red)
+                                                    }
+                                                },
+                                                dismissButton = {
+                                                    TextButton(onClick = {
+                                                        showDeleteConfirmation = false
+                                                    }) {
+                                                        Text("Cancel", color = Color.Black)
+                                                    }
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
-
+                    }
+                    is ApiState.Error -> {
+                        val errorMessage = (priceRules as ApiState.Error).message
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "Error: $errorMessage", color = Color.Red)
+                        }
                     }
                 }
             }
         }
     )
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PriceRuleDialog(
     onDismiss: () -> Unit,
@@ -255,6 +304,7 @@ fun PriceRuleDialog(
     }
 
     AlertDialog(
+        containerColor = Color.White,
         onDismissRequest = onDismiss,
         title = { Text("Add/Edit Price Rule", style = MaterialTheme.typography.titleLarge) },
         text = {
@@ -264,7 +314,10 @@ fun PriceRuleDialog(
                     onValueChange = { ruleName = it },
                     label = { Text("Title") },
                     isError = ruleName.isEmpty(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White
+                    )
                 )
                 TextField(
                     value = discountPercentage,
@@ -275,7 +328,10 @@ fun PriceRuleDialog(
                     },
                     label = { Text("Discount Percentage") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White
+                    )
                 )
 
                 TextField(
@@ -287,7 +343,10 @@ fun PriceRuleDialog(
                     },
                     label = { Text("Usage Limit") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Color.White
+                    )
                 )
 
                 Row(

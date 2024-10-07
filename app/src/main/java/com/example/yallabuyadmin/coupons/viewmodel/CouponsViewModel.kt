@@ -8,29 +8,35 @@ import com.example.yallabuyadmin.coupons.model.DiscountCode
 import com.example.yallabuyadmin.coupons.model.DiscountCodeRequest
 import com.example.yallabuyadmin.coupons.model.PriceRule
 import com.example.yallabuyadmin.coupons.model.priceRuleRequest
+import com.example.yallabuyadmin.network.ApiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewModel() {
 
-    private val _discountCodes = MutableStateFlow<List<DiscountCode>>(emptyList())
-    val discountCodes: StateFlow<List<DiscountCode>> get() = _discountCodes
+    private val _discountCodes = MutableStateFlow<ApiState<List<DiscountCode>>>(ApiState.Loading)
+    val discountCodes: StateFlow<ApiState<List<DiscountCode>>> get() = _discountCodes
 
-    private var priceRuleId: Long? = null
-
-    private val _priceRules = MutableStateFlow<List<PriceRule>>(emptyList())
-    val priceRules: StateFlow<List<PriceRule>> get() = _priceRules
-
-    private val _deleteResult = MutableStateFlow<Result<Unit>?>(null)
-    val deleteResult: StateFlow<Result<Unit>?> = _deleteResult
+    private val _priceRules = MutableStateFlow<ApiState<List<PriceRule>>>(ApiState.Loading)
+    val priceRules: StateFlow<ApiState<List<PriceRule>>> get() = _priceRules
 
     fun fetchPriceRules() {
         viewModelScope.launch {
-            couponsRepository.getPriceRules().collect { rules ->
-                _priceRules.value = rules
+            couponsRepository.getPriceRules()
+                .onStart {
+                    _priceRules.value = ApiState.Loading
+                }
+                .catch { e ->
+                    _priceRules.value = ApiState.Error(e.message ?: "Unknown error")
+                }
+                .collect { rules ->
+                    _priceRules.value = ApiState.Success(rules)
             }
         }
     }
@@ -70,9 +76,7 @@ class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewM
     fun deletePriceRule(priceRuleId: Long) {
         viewModelScope.launch {
             try{
-                val result = couponsRepository.deletePriceRule(priceRuleId)
-                Log.d("Result",result.toString())
-                _deleteResult.value = result
+                couponsRepository.deletePriceRule(priceRuleId)
                 fetchPriceRules()
             }  catch (e: Exception) {
                 // Handle errors accordingly
@@ -82,9 +86,16 @@ class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewM
     }
     fun fetchDiscountCodes(priceRuleId: Long) {
         viewModelScope.launch {
-            couponsRepository.getDiscountCodes(priceRuleId).collect { discountCodes ->
-                _discountCodes.value = discountCodes
-            }
+            couponsRepository.getDiscountCodes(priceRuleId)
+                .onStart {
+                    _discountCodes.value = ApiState.Loading
+                }
+                .catch { e ->
+                    _discountCodes.value = ApiState.Error(e.message ?: "Unknown error")
+                }
+                .collect { discountCodes ->
+                    _discountCodes.value = ApiState.Success(discountCodes)
+                }
         }
     }
 
@@ -123,7 +134,7 @@ class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewM
         viewModelScope.launch {
             try {
                 couponsRepository.deleteDiscountCode(priceRuleId,id)
-                fetchDiscountCodes(priceRuleId) // Refresh discount codes
+                //fetchDiscountCodes(priceRuleId) // Refresh discount codes
             } catch (e: Exception) {
                 e.printStackTrace()
             }

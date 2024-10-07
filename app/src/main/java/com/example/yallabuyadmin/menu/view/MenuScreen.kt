@@ -4,27 +4,44 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yallabuyadmin.FirebaseAuthun
 import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.menu.viewmodel.MenuViewModel
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
 
 @Composable
 fun MenuScreen(
@@ -34,6 +51,17 @@ fun MenuScreen(
     onNavigateToCoupons: () -> Unit,
     onLogout: () -> Unit
 ) {
+    val mAuth = FirebaseAuth.getInstance()
+    val currentUser = mAuth.currentUser
+    var showGreeting by remember { mutableStateOf(true) }
+    var showLogoutConfirmation by remember { mutableStateOf(false) }
+
+    val greetingMessage = if (currentUser != null) {
+        "Hello, ${currentUser.displayName ?: "User"}!"
+    } else {
+        "Hello!"
+    }
+
     val inventoryCount = menuViewModel.inventoryCount.collectAsState().value
     val productsCount = menuViewModel.productsCount.collectAsState().value
     val couponsCount = menuViewModel.couponsCount.collectAsState().value
@@ -50,13 +78,74 @@ fun MenuScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = onLogout, modifier = Modifier.align(Alignment.End)) {
-                Icon(
-                    painter = painterResource(id = R.drawable.img_2),
-                    contentDescription = "Logout",
-                    tint = Color.Black
+
+            if (showGreeting) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(4.dp), // Moderate elevation for a subtle shadow
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFECEFF1)) // Light grey for background
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically, // Center align the content
+                        horizontalArrangement = Arrangement.SpaceBetween // Space items evenly
+                    ) {
+                        // Welcoming icon
+                        Icon(
+                            painter = painterResource(id = R.drawable.img_3), // Your welcome icon
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp), // Slightly larger icon for better visibility
+                            tint = Color.Black // Change to a primary theme color
+                        )
+
+                        // Centered greeting message
+                        Text(
+                            text = greetingMessage,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.weight(1f) // Allow this text to take available space
+                        )
+
+                        // Logout button
+                        IconButton(onClick = { showLogoutConfirmation = true }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.img_2),
+                                contentDescription = "Logout",
+                                tint = Color.Black
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (showLogoutConfirmation) {
+                AlertDialog(
+                    containerColor = Color.White,
+                    onDismissRequest = { showLogoutConfirmation = false },
+                    title = { Text("Confirm Logout") },
+                    text = { Text("Are you sure you want to log out?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            onLogout() // Call the logout function
+                            showLogoutConfirmation = false // Close the dialog
+                        }) {
+                            Text("Logout", color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            showLogoutConfirmation = false // Close the dialog
+                        }) {
+                            Text("Cancel", color = Color.Black)
+                        }
+                    }
                 )
             }
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -107,7 +196,6 @@ fun MenuScreen(
         }
     }
 }
-
 
 @Composable
 fun CircularImageWithText() {

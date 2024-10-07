@@ -19,6 +19,9 @@ class MenuViewModel(private val repository: MenuRepository) : ViewModel() {
     private val _couponsCount = MutableStateFlow(0)
     val couponsCount: StateFlow<Int> = _couponsCount
 
+    private val _isLoading = MutableStateFlow(true) // Loading state
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init {
         loadCounts()
     }
@@ -26,12 +29,15 @@ class MenuViewModel(private val repository: MenuRepository) : ViewModel() {
     fun loadCounts() {
         viewModelScope.launch {
             try {
+                _isLoading.value = true // Set loading to true before fetching
                 _inventoryCount.value = repository.getInventoryCount()
                 _productsCount.value = repository.getProductsCount()
                 _couponsCount.value = repository.getCouponsCount()
             } catch (e: Exception) {
                 Log.d("Error:", e.toString())
                 // Handle error here
+            } finally {
+                _isLoading.value = false // Set loading to false after fetching
             }
         }
     }

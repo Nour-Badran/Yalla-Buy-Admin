@@ -1,23 +1,37 @@
 package com.example.yallabuyadmin.coupons.view
 
+import android.annotation.SuppressLint
+import android.app.TimePickerDialog
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 import com.example.yallabuyadmin.coupons.model.DiscountCode
 import com.example.yallabuyadmin.coupons.model.PriceRule
 import com.example.yallabuyadmin.coupons.model.priceRuleRequest
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +87,7 @@ fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewM
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Product Management", color = Color.Cyan) },
+                title = { Text("Price Rules", color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black
                 ),
@@ -84,12 +98,13 @@ fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewM
                 }
             )
         },
+
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 currentPriceRule = null // Reset for new price rule
                 showPriceRuleDialog = true
-            }) {
-                Text("+")
+            },contentColor = Color.White, containerColor = Color.Black) {
+                Icon(Icons.Default.Add, contentDescription = "Create Discount Code")
             }
         },
         content = { padding ->
@@ -99,7 +114,7 @@ fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewM
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text("Price Rules", style = MaterialTheme.typography.titleLarge)
+                //Text("Price Rules", style = MaterialTheme.typography.titleLarge)
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -110,54 +125,83 @@ fun CouponsScreen(onBack: () -> Unit, onNavigateToDiscount: (Long) -> Unit,viewM
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            elevation = CardDefaults.cardElevation(4.dp)
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, Color.Black)
                         ) {
                             Column(
                                 modifier = Modifier
-                                    .padding(16.dp)
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
                             ) {
+                                // Title
                                 Text(
-                                    text = "Title: ${priceRule.title}",
-                                    style = MaterialTheme.typography.titleMedium
+                                    text = priceRule.title,
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = Color.Black // Primary color for emphasis
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Discount Value
                                 Text(
-                                    text = "Discount Percentage: ${priceRule.value}",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    text = "Discount: ${priceRule.value}%",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFF616161) // Darker gray for readability
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Starts At
+                                val startDateTime = ZonedDateTime.parse(priceRule.starts_at)
+                                val formattedStartDateTime = startDateTime.format(DateTimeFormatter.ofPattern("dd MMMM, yyyy, hh:mm a"))
                                 Text(
-                                    text = "Starts At: ${priceRule.starts_at}",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    text = "Starts At: $formattedStartDateTime",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF757575) // Subtle text color for less emphasis
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Ends At
+                                val endDateTime = ZonedDateTime.parse(priceRule.ends_at)
+                                val formattedEndDateTime = endDateTime.format(DateTimeFormatter.ofPattern("dd MMMM, yyyy, hh:mm a"))
                                 Text(
-                                    text = "Ends At: ${priceRule.ends_at}",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    text = "Ends At: $formattedEndDateTime",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF757575)
                                 )
+
+                                // Action buttons
+                                Divider(
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    color = Color(0xFFE0E0E0)
+                                ) // Divider to visually separate content from actions
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.End
+                                    horizontalArrangement = Arrangement.SpaceBetween // Arrange buttons evenly
                                 ) {
-                                    IconButton(onClick = {
+                                    TextButton(onClick = {
                                         currentPriceRule = priceRule // Set the current price rule for editing
                                         showPriceRuleDialog = true // Show the dialog
                                     }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Black)
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Edit", color = Color.Black)
                                     }
-                                    IconButton(onClick = {
+                                    TextButton(onClick = {
                                         viewModel.deletePriceRule(priceRule.id!!)
                                     }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Delete", color = Color.Red)
                                     }
-                                    IconButton(onClick = {
+                                    TextButton(onClick = {
                                         onNavigateToDiscount(priceRule.id!!)
                                     }) {
-                                        Icon(Icons.Default.PlayArrow, contentDescription = "Delete")
+                                        Icon(Icons.Default.PlayArrow, contentDescription = "Apply", tint = Color.Black)
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Coupons", color = Color.Black)
                                     }
                                 }
                             }
                         }
+
                     }
                 }
             }
@@ -170,141 +214,159 @@ fun PriceRuleDialog(
     onSubmit: (priceRuleRequest) -> Unit,
     priceRule: PriceRule? // Pass in an existing PriceRule for editing, or null for new
 ) {
-    var ruleName by remember { mutableStateOf(priceRule?.title ?: "") }
-    var discountPercentage by remember { mutableStateOf(priceRule?.value?.toString() ?: "") }
-    var valueType by remember { mutableStateOf(priceRule?.value_type ?: "") }
-    var startsAt by remember { mutableStateOf(priceRule?.starts_at ?: "") }
-    var endsAt by remember { mutableStateOf(priceRule?.ends_at ?: "") }
-    var targetSelection by remember { mutableStateOf(priceRule?.target_selection ?: "") }
-    var allocationMethod by remember { mutableStateOf(priceRule?.allocation_method ?: "") }
-    var targetType by remember { mutableStateOf(priceRule?.target_type ?: "") }
+    // State for the input fields
+    var ruleName by remember { mutableStateOf(priceRule?.title ?: "Title") }
+    var discountPercentage by remember { mutableStateOf(priceRule?.value?.toString() ?: "-0.00") }
+    var valueType by remember { mutableStateOf(priceRule?.value_type ?: "percentage") }
+    var startsAt by remember { mutableStateOf(priceRule?.starts_at ?: "2024-10-14T17:52:44-04:00") }
+    var endsAt by remember { mutableStateOf(priceRule?.ends_at ?: "2025-10-14T17:52:44-04:00") }
+    var targetSelection by remember { mutableStateOf(priceRule?.target_selection ?: "all") }
+    var allocationMethod by remember { mutableStateOf(priceRule?.allocation_method ?: "across") }
+    var targetType by remember { mutableStateOf(priceRule?.target_type ?: "line_item") }
     var customerSelection by remember { mutableStateOf(priceRule?.customer_selection ?: "all") }
-    var usageLimit by remember { mutableStateOf(priceRule?.usage_limit?.toString() ?: "") }
+    var usageLimit by remember { mutableStateOf(priceRule?.usage_limit?.toString() ?: "1") }
 
-    val customerOptions = listOf("all", "prerequisite", "entitled")
-    var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    @SuppressLint("DefaultLocale")
+    fun showDateTimePicker(onDateTimeSelected: (String) -> Unit) {
+        val calendar = Calendar.getInstance()
+        android.app.DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                TimePickerDialog(
+                    context,
+                    { _, hour, minute ->
+                        val selectedDateTime = String.format(
+                            "%04d-%02d-%02dT%02d:%02d:00-04:00",
+                            year, month + 1, dayOfMonth, hour, minute
+                        )
+                        onDateTimeSelected(selectedDateTime)
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+                ).show()
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add/Edit Price Rule") },
+        title = { Text("Add/Edit Price Rule", style = MaterialTheme.typography.titleLarge) },
         text = {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextField(
                     value = ruleName,
                     onValueChange = { ruleName = it },
                     label = { Text("Title") },
-                    isError = ruleName.isEmpty()
+                    isError = ruleName.isEmpty(),
+                    modifier = Modifier.fillMaxWidth()
                 )
                 TextField(
                     value = discountPercentage,
-                    onValueChange = { discountPercentage = it },
+                    onValueChange = {
+                        if (it.toDoubleOrNull() != null && it.toDouble() >= 0) {
+                            discountPercentage = it
+                        }
+                    },
                     label = { Text("Discount Percentage") },
-                    isError = discountPercentage.toDoubleOrNull() == null || discountPercentage.toDouble() < 0
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
                 )
-                TextField(
-                    value = valueType,
-                    onValueChange = { valueType = it },
-                    label = { Text("Value Type") },
-                    isError = valueType.isEmpty()
-                )
-                TextField(
-                    value = startsAt,
-                    onValueChange = { startsAt = it },
-                    label = { Text("Starts At") },
-                    isError = startsAt.isEmpty()
-                )
-                TextField(
-                    value = endsAt,
-                    onValueChange = { endsAt = it },
-                    label = { Text("Ends At") },
-                    isError = endsAt.isEmpty()
-                )
-                TextField(
-                    value = targetSelection,
-                    onValueChange = { targetSelection = it },
-                    label = { Text("Target Selection") },
-                    isError = targetSelection.isEmpty()
-                )
-                TextField(
-                    value = allocationMethod,
-                    onValueChange = { allocationMethod = it },
-                    label = { Text("Allocation Method") },
-                    isError = allocationMethod.isEmpty()
-                )
-                TextField(
-                    value = targetType,
-                    onValueChange = { targetType = it },
-                    label = { Text("Target Type") },
-                    isError = targetType.isEmpty()
-                )
-
-// Dropdown for Customer Selection
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            expanded = true
-                        }
-                ) {
-                    TextField(
-                        value = customerSelection,
-                        onValueChange = {},
-                        label = { Text("Customer Selection") },
-                        readOnly = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        customerOptions.forEach { option ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    customerSelection = option
-                                    expanded = false
-                                },
-                                text = { Text(option) } // Pass the Text as a lambda
-                            )
-                        }
-                    }
-                }
-
 
                 TextField(
                     value = usageLimit,
-                    onValueChange = { usageLimit = it },
-                    label = { Text("User Limit") },
-                    isError = usageLimit.toIntOrNull() == null || usageLimit.toInt() < 0
+                    onValueChange = {
+                        if (it.toIntOrNull() != null && it.toInt() >= 0) {
+                            usageLimit = it
+                        }
+                    },
+                    label = { Text("Usage Limit") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
                 )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Starts At: $startsAt",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = { showDateTimePicker { startsAt = it } }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select Start Date & Time",
+                            tint = Color.Black
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Ends At: $endsAt",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = { showDateTimePicker { endsAt = it } }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select End Date & Time",
+                            tint = Color.Black
+                        )
+
+                    }
+                }
             }
         },
         confirmButton = {
-            Button(onClick = {
-                onSubmit(
-                    priceRuleRequest(
-                        PriceRule(
-                            id = priceRule?.id, // Pass the existing id if editing
-                            title = ruleName,
-                            value = discountPercentage.toDoubleOrNull() ?: 0.0,
-                            value_type = valueType,
-                            starts_at = startsAt,
-                            ends_at = endsAt,
-                            target_selection = targetSelection,
-                            allocation_method = allocationMethod,
-                            target_type = targetType,
-                            customer_selection = customerSelection,
-                            usage_limit = usageLimit.toLongOrNull() ?: 0
+            Button(
+                onClick = {
+                    onSubmit(
+                        priceRuleRequest(
+                            PriceRule(
+                                id = priceRule?.id,
+                                title = ruleName,
+                                value = discountPercentage.toDoubleOrNull() ?: 0.0,
+                                value_type = valueType,
+                                starts_at = startsAt,
+                                ends_at = endsAt,
+                                target_selection = targetSelection,
+                                allocation_method = allocationMethod,
+                                target_type = targetType,
+                                customer_selection = customerSelection,
+                                usage_limit = usageLimit.toLongOrNull() ?: 0
+                            )
                         )
                     )
-                )
-            }) {
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+            ) {
                 Text("Submit")
             }
         },
         dismissButton = {
-            Button(onClick = onDismiss) {
+            Button(onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+            ) {
                 Text("Dismiss")
             }
-        }
+        },
+        modifier = Modifier.padding(16.dp)
     )
 }

@@ -50,7 +50,7 @@ fun CreateProductScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Create Product", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Cyan) },
+                title = { Text("Create Product", fontSize = 20.sp, color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black
                 ),
@@ -62,13 +62,13 @@ fun CreateProductScreen(
             )
         },
         content = { padding ->
-            // Use Box to position Snackbar at the bottom
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
                         .padding(16.dp)
+                        .background(Color.White)
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -81,7 +81,6 @@ fun CreateProductScreen(
                                 .fillMaxWidth()
                                 .height(200.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(Color.LightGray)
                                 .padding(8.dp),
                             contentScale = ContentScale.FillBounds
                         )
@@ -91,7 +90,6 @@ fun CreateProductScreen(
                                 .fillMaxWidth()
                                 .height(200.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(Color.LightGray)
                                 .padding(8.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -101,7 +99,8 @@ fun CreateProductScreen(
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Column(
                             modifier = Modifier
@@ -178,7 +177,8 @@ fun CreateProductScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        enabled = !isLoading // Disable the button while loading
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))

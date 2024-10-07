@@ -38,10 +38,10 @@ fun SplashScreen(onTimeout: () -> Unit) {
     ) {
         LottieAnimation(
             composition = composition,
-            progress = progress
+            progress = progress,
         )
         //Spacer(modifier = Modifier.height(16.dp)) // Optional spacing between animation and text
-        Text("Welcome to YallaBuy Admin", fontSize = 24.sp, color = Color.Cyan)
+        Text("Welcome to YallaBuy-Admin", fontSize = 24.sp, color = Color.Black)
     }
 
     LaunchedEffect(Unit) {

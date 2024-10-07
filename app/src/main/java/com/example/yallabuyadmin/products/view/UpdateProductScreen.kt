@@ -1,6 +1,7 @@
 package com.example.yallabuyadmin.products.view
 
 import android.util.Log
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,10 +28,6 @@ import com.example.yallabuyadmin.products.model.Variant
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import android.net.Uri
-import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,29 +37,24 @@ fun UpdateProductScreen(
     onUpdateProduct: () -> Unit,
     onBack: () -> Unit
 ) {
+    Log.d("Id",product.id.toString())
     var productName by remember { mutableStateOf(product.title) }
     var vendor by remember { mutableStateOf(product.vendor) }
     var productType by remember { mutableStateOf(product.product_type) }
-    var variants by remember { mutableStateOf(product.variants) }
+    var variants by remember { mutableStateOf(product.variants) } // Maintain a list of variants
     var imageUrl by remember { mutableStateOf(product.images.firstOrNull()?.src ?: "") }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val isLoading by viewModel.isUpdating
+    val isLoading by viewModel.isUpdating // Observe loading state from the ViewModel
     val errorMessage by viewModel.errorMessage.collectAsState()
-    val successMessage by viewModel.successMessage.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-
-    // Launcher for selecting an image from the gallery
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        selectedImageUri = uri
-    }
+    val successMessage by viewModel.successMessage.collectAsState() // Collect success message
+    val coroutineScope = rememberCoroutineScope() // Coroutine scope for launching coroutines
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Update Product", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Cyan) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
+                title = { Text("Update Product", fontSize = 20.sp, color = Color.White) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -81,39 +73,33 @@ fun UpdateProductScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.LightGray)
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (selectedImageUri != null) {
+                    if (imageUrl.isNotBlank()) {
+                        Crossfade(targetState = imageUrl) { currentImageUrl ->
                             Image(
-                                painter = rememberAsyncImagePainter(selectedImageUri),
+                                painter = rememberAsyncImagePainter(currentImageUrl),
                                 contentDescription = "Product Image",
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .padding(8.dp),
                                 contentScale = ContentScale.FillBounds
                             )
-                        } else if (imageUrl.isNotBlank()) {
-                            Image(
-                                painter = rememberAsyncImagePainter(imageUrl),
-                                contentDescription = "Product Image",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.FillBounds
-                            )
-                        } else {
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.LightGray)
+                                .padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text("No Image Available", fontSize = 18.sp, color = Color.Gray)
                         }
                     }
 
-                    Button(onClick = { imagePickerLauncher.launch("image/*") }) {
-                        Text("Select Image")
-                    }
-
-                    // Rest of the UI fields
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -148,6 +134,7 @@ fun UpdateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
                             )
+
                             variants.forEachIndexed { index, variant ->
                                 Column(modifier = Modifier.fillMaxWidth()) {
                                     OutlinedTextField(
@@ -174,39 +161,44 @@ fun UpdateProductScreen(
                                     )
                                 }
                             }
-                            // Update Product Button
-                            Button(
-                                onClick = {
-                                    val updatedProduct = product.copy(
-                                        title = productName,
-                                        vendor = vendor,
-                                        product_type = productType,
-                                        images = listOf(
-                                            com.example.yallabuyadmin.products.model.Image(
-                                                src = selectedImageUri?.toString() ?: imageUrl
-                                            )
-                                        ),
-                                        variants = variants
-                                    )
-                                    viewModel.updateProduct(updatedProduct)
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                                enabled = !isLoading
-                            ) {
-                                if (isLoading) {
-                                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                                } else {
-                                    Text("Update Product", fontSize = 18.sp, color = Color.Cyan)
-                                }
-                            }
+
+                            OutlinedTextField(
+                                value = imageUrl,
+                                onValueChange = { imageUrl = it },
+                                label = { Text("Image URL", fontWeight = FontWeight.Bold) },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            // Update the product with new details
+                            val updatedProduct = product.copy(
+                                title = productName,
+                                vendor = vendor,
+                                product_type = productType,
+                                images = listOf(com.example.yallabuyadmin.products.model.Image(src = imageUrl)),
+                                variants = variants
+                            )
+                            viewModel.updateProduct(updatedProduct) // Ensure the API call updates the errorMessage state in ViewModel
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        enabled = !isLoading // Disable the button while loading
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        } else {
+                            Text("Update Product", fontSize = 18.sp, color = Color.Cyan)
                         }
                     }
                 }
 
-                // Display error or success message
+                // Display error or success message at the bottom of the screen
                 errorMessage?.let { message ->
                     Snackbar(
                         modifier = Modifier
@@ -224,9 +216,9 @@ fun UpdateProductScreen(
 
                 successMessage?.let {
                     coroutineScope.launch {
-                        delay(2000)
+                        delay(2000) // Show the message for 3 seconds
                         viewModel.clearSuccess()
-                        onBack()
+                        onBack() // Navigate back after delay
                     }
                     Snackbar(
                         modifier = Modifier
@@ -245,3 +237,4 @@ fun UpdateProductScreen(
         }
     )
 }
+

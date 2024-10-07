@@ -2,9 +2,11 @@ package com.example.yallabuyadmin.coupons.view
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,6 +22,7 @@ import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.window.Dialog
 import com.example.yallabuyadmin.coupons.model.DiscountCode
@@ -32,14 +35,6 @@ fun DiscountCodesScreen(
     onBack: () -> Unit,
     viewModel: CouponsViewModel
 ) {
-    val context = LocalContext.current
-
-    // Show a toast message with the priceRuleId
-    LaunchedEffect(priceRuleId) {
-        Log.d("a",priceRuleId.toString())
-        Toast.makeText(context, "Price Rule ID: $priceRuleId", Toast.LENGTH_SHORT).show()
-    }
-
     val discountCodes by viewModel.discountCodes.collectAsState()
     val showCreateDialog = remember { mutableStateOf(false) }
     val showEditDialog = remember { mutableStateOf(false) }
@@ -53,16 +48,19 @@ fun DiscountCodesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Discount Codes") },
+                title = { Text("Discount Codes", color = Color.White) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black
+                ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showCreateDialog.value = true }) {
+            FloatingActionButton(onClick = { showCreateDialog.value = true },contentColor = Color.White, containerColor = Color.Black) {
                 Icon(Icons.Default.Add, contentDescription = "Create Discount Code")
             }
         },
@@ -80,7 +78,10 @@ fun DiscountCodesScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            elevation = CardDefaults.cardElevation(4.dp)
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp,Color.Black)
                         ) {
                             Column(
                                 modifier = Modifier

@@ -1,13 +1,18 @@
 package com.example.yallabuyadmin.ui.theme.screens
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.yallabuyadmin.FirebaseAuthun
+import com.example.yallabuyadmin.LogInScreen
+import com.example.yallabuyadmin.SignupScreen
 import com.example.yallabuyadmin.coupons.model.CouponsRemoteDataSource
 import com.example.yallabuyadmin.coupons.model.CouponsRepository
 import com.example.yallabuyadmin.coupons.view.CouponsScreen
@@ -27,6 +32,7 @@ import com.example.yallabuyadmin.products.model.ProductRepository
 import com.example.yallabuyadmin.products.view.CreateProductScreen
 import com.example.yallabuyadmin.products.view.ProductManagementScreen
 import com.example.yallabuyadmin.products.view.UpdateProductScreen
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -56,13 +62,19 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainContent() {
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    val loggedIn = sharedPreferences.getBoolean("logged_in", false)
+
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
     var createNewProduct by remember { mutableStateOf(false) }
-    var navigateToMenu by remember { mutableStateOf(true) }
+    var navigateToMenu by remember { mutableStateOf(loggedIn) }
     var navigateToInventory by remember { mutableStateOf(false) }
     var navigateToCoupons by remember { mutableStateOf(false) }
     var navigateToDiscountScreen by remember { mutableStateOf(false) } // New state for discount screen
     var selectedDiscountId by remember { mutableStateOf<Long?>(null) } // To hold selected discount ID
+    var navigateToSignUp by remember { mutableStateOf(false) }
+    var navigateToLogin by remember { mutableStateOf(!loggedIn) }
 
     val viewModel: ProductViewModel = viewModel(factory = ProductViewModelFactory(
         ProductRepository(
@@ -75,21 +87,61 @@ fun MainContent() {
     val couponsRepository = CouponsRepository(CouponsRemoteDataSource(RetrofitInstance.api))
     val couponsViewModel: CouponsViewModel = viewModel(factory = CouponsViewModelFactory(couponsRepository))
 
-    val inventoryCount = menuViewModel.inventoryCount.collectAsState().value
-    val productsCount = menuViewModel.productsCount.collectAsState().value
-    val couponsCount = menuViewModel.couponsCount.collectAsState().value
-
     // Logout function
     fun logout() {
-        // Handle logout logic here
-        // For example, clear user session, navigate to login screen, etc.
-        navigateToMenu = true // or set up your navigation logic
+        //FirebaseAuth.getInstance().signOut()
+
+        FirebaseAuthun().logOut()
+
+        with(sharedPreferences.edit()) {
+            putBoolean("logged_in", false)
+            apply()
+        }
+
+        navigateToMenu = false
+        navigateToLogin = true // or set up your navigation logic
     }
 
     when {
+        navigateToSignUp ->{
+            SignupScreen(
+                onLogin = {
+                    navigateToSignUp = false
+                    navigateToLogin = true
+                }, onSignupSuccess = {
+
+                    with(sharedPreferences.edit()) {
+                        putBoolean("logged_in", true)
+                        apply()
+                    }
+
+                    navigateToSignUp = false
+                    navigateToMenu = true
+                }
+            )
+        }
+        navigateToLogin -> {
+            LogInScreen(
+                onSignup = {
+                    navigateToLogin = false
+                    navigateToSignUp = true
+                },
+                onLogIn = {
+
+                    with(sharedPreferences.edit()) {
+                        putBoolean("logged_in", true)
+                        apply()
+                    }
+
+                    navigateToLogin = false
+                    navigateToMenu = true
+                }
+            )
+        }
         navigateToMenu -> {
             menuViewModel.loadCounts()
             MenuScreen(
+                menuViewModel = menuViewModel, // Pass MenuViewModel
                 onNavigateToProducts = {
                     navigateToMenu = false
                 },
@@ -101,10 +153,7 @@ fun MainContent() {
                     navigateToMenu = false
                     navigateToCoupons = true
                 },
-                onLogout = { logout() },
-                inventoryCount = inventoryCount.toString(),
-                productsCount = productsCount.toString(),
-                couponsCount = couponsCount.toString()
+                onLogout = { logout() }
             )
         }
         navigateToInventory -> {
@@ -172,20 +221,4 @@ fun MainContent() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MenuScreenPreview() {
-    val dummyInventoryCount = 5
-    val dummyProductsCount = 10
-    val dummyCouponsCount = 2
 
-    MenuScreen(
-        onNavigateToProducts = {},
-        onNavigateToInventory = {},
-        onNavigateToCoupons = {},
-        onLogout = {},
-        inventoryCount = dummyInventoryCount.toString(),
-        productsCount = dummyProductsCount.toString(),
-        couponsCount = dummyCouponsCount.toString()
-    )
-}

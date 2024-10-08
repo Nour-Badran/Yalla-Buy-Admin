@@ -45,7 +45,9 @@ fun CouponsScreen(
     val priceRules by viewModel.priceRules.collectAsState()
     // State for dialogs
     var showDiscountCodeDialog by remember { mutableStateOf(false) }
-    var showPriceRuleDialog by remember { mutableStateOf(false) }
+    var showCreatePriceRuleDialog by remember { mutableStateOf(false) }
+    var showEditPriceRuleDialog by remember { mutableStateOf(false) }
+
     var currentDiscountCode by remember { mutableStateOf<DiscountCode?>(null) }
     var currentPriceRule by remember { mutableStateOf<PriceRule?>(null) } // New state for price rule
 
@@ -70,11 +72,10 @@ fun CouponsScreen(
 //            discountCode = currentDiscountCode
 //        )
 //    }
-
-    if (showPriceRuleDialog) {
+    if (showCreatePriceRuleDialog) {
         PriceRuleDialog(
             onDismiss = {
-                showPriceRuleDialog = false
+                showCreatePriceRuleDialog = false
                 currentPriceRule = null // Reset the current price rule
             },
             onSubmit = { priceRule ->
@@ -83,7 +84,23 @@ fun CouponsScreen(
                 } ?: run {
                     viewModel.createNewPriceRule(priceRule) // Create new price rule
                 }
-                showPriceRuleDialog = false
+                showCreatePriceRuleDialog = false
+            }
+        )
+    }
+    if (showEditPriceRuleDialog) {
+        PriceRuleDialog(
+            onDismiss = {
+                showEditPriceRuleDialog = false
+                currentPriceRule = null // Reset the current price rule
+            },
+            onSubmit = { priceRule ->
+                currentPriceRule?.let {
+                    viewModel.updatePriceRule(it.id!!, priceRule) // Update existing price rule
+                } ?: run {
+                    viewModel.createNewPriceRule(priceRule) // Create new price rule
+                }
+                showEditPriceRuleDialog = false
             },
             priceRule = currentPriceRule // Pass the current price rule for editing
         )
@@ -107,7 +124,7 @@ fun CouponsScreen(
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 currentPriceRule = null // Reset for new price rule
-                showPriceRuleDialog = true
+                showCreatePriceRuleDialog = true
             },contentColor = Color.White, containerColor = Color.Black) {
                 Icon(Icons.Default.Add, contentDescription = "Create Discount Code")
             }
@@ -192,7 +209,7 @@ fun CouponsScreen(
                                         ) {
                                             TextButton(onClick = {
                                                 currentPriceRule = priceRule // Set the current price rule for editing
-                                                showPriceRuleDialog = true // Show the dialog
+                                                showEditPriceRuleDialog = true // Show the dialog
                                             }) {
                                                 Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Black)
                                                 Spacer(modifier = Modifier.width(4.dp))
@@ -261,7 +278,7 @@ fun CouponsScreen(
 fun PriceRuleDialog(
     onDismiss: () -> Unit,
     onSubmit: (priceRuleRequest) -> Unit,
-    priceRule: PriceRule? // Pass in an existing PriceRule for editing, or null for new
+    priceRule: PriceRule? = null // Pass in an existing PriceRule for editing, or null for new
 ) {
     // State for the input fields
     var ruleName by remember { mutableStateOf(priceRule?.title ?: "Title") }
@@ -306,7 +323,12 @@ fun PriceRuleDialog(
     AlertDialog(
         containerColor = Color.White,
         onDismissRequest = onDismiss,
-        title = { Text("Add/Edit Price Rule", style = MaterialTheme.typography.titleLarge) },
+        title = {
+            Text(
+                text = if (priceRule == null) "Add Price Rule" else "Edit Price Rule",
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextField(
@@ -321,11 +343,7 @@ fun PriceRuleDialog(
                 )
                 TextField(
                     value = discountPercentage,
-                    onValueChange = {
-                        if (it.toDoubleOrNull() != null && it.toDouble() >= 0) {
-                            discountPercentage = it
-                        }
-                    },
+                    onValueChange = {discountPercentage = it },
                     label = { Text("Discount Percentage") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
@@ -401,7 +419,7 @@ fun PriceRuleDialog(
                             PriceRule(
                                 id = priceRule?.id,
                                 title = ruleName,
-                                value = discountPercentage.toDoubleOrNull() ?: 0.0,
+                                value = discountPercentage.toDoubleOrNull()?.let { if (it > 0) -it else it } ?: 0.0,
                                 value_type = valueType,
                                 starts_at = startsAt,
                                 ends_at = endsAt,

@@ -36,8 +36,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yallabuyadmin.ui.theme.AppColors
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("SuspiciousIndentation")
@@ -62,35 +64,29 @@ fun LogInScreen(onSignup: () -> Unit,onLogIn: () -> Unit) {
 
             ) {
 
-            Text(text = "Login",
+            Text(text = "Welcome Back!",
                 fontSize = 35.sp,
                 color = Color.Black,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(text = "Don’t have an account?")
-                TextButton(onClick = onSignup) {
-                    Text(text = " Signup", color = Color.Cyan)
-                }
-            }
 //            Spacer(modifier = Modifier.height(8.dp))
         }
 
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Email", fontSize = 18.sp, modifier = Modifier.padding(8.dp))
-
         OutlinedTextField(
             value = email,
             onValueChange = {input -> email = input },
             //label = { Text(text = "Full Name") },
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
+                .height(75.dp)
                 .background(color = Color.White)
                 .padding(10.dp),
-            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.Cyan)
+            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.MintGreen)
         )
 
         Text(text = "Password", fontSize = 18.sp, modifier = Modifier.padding(8.dp))
@@ -98,9 +94,10 @@ fun LogInScreen(onSignup: () -> Unit,onLogIn: () -> Unit) {
         OutlinedTextField(
             value = password,
             onValueChange = { input -> password = input },
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
+                .height(75.dp)
                 .background(color = Color.White)
                 .padding(10.dp),
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -117,7 +114,7 @@ fun LogInScreen(onSignup: () -> Unit,onLogIn: () -> Unit) {
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.Cyan)
+            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.MintGreen)
 
 
         )
@@ -170,7 +167,7 @@ fun LogInScreen(onSignup: () -> Unit,onLogIn: () -> Unit) {
                 }
 
             },
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(30.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black,        // Default background color
                 contentColor = Color.White,         // Text color
@@ -189,7 +186,17 @@ fun LogInScreen(onSignup: () -> Unit,onLogIn: () -> Unit) {
             }
 
         }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = "Don’t have an account?")
+            TextButton(onClick = onSignup) {
+                Text(text = " Signup", color = AppColors.MintGreen)
+            }
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
     }
 }
+
+
+

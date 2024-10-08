@@ -49,10 +49,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.example.yallabuyadmin.R
+import com.example.yallabuyadmin.ui.theme.AppColors
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 
 @Composable
@@ -202,119 +204,97 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
-            .background(Color.White),
-//        horizontalAlignment = Alignment.CenterHorizontally,
+            .background(Color.White)
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Column( horizontalAlignment = Alignment.Start,
 
             ) {
-            Text(text = "Signup",
+            Text(text = "Create an account",
                 fontSize = 35.sp,
                 color = Color.Black,
                 modifier = Modifier.padding(8.dp)
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(text = "Already have an account?")
-                TextButton(onClick = onLogin) {
-                    Text(text = " Login", color = Color.Cyan)
-                }
-            }
+
 //            Spacer(modifier = Modifier.height(8.dp))
         }
 
 
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Full Name", fontSize = 18.sp, modifier = Modifier.padding(8.dp))
-
+        Text(text = "Full Name", fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
         OutlinedTextField(
             value = fullName,
-            onValueChange = {input -> fullName = input },
-            //label = { Text(text = "Full Name") },
-            shape = RoundedCornerShape(10.dp),
+            onValueChange = { fullName = it },
+            shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.White)
+                .height(75.dp)
                 .padding(10.dp),
-            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.Cyan)
+            colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.MintGreen)
         )
 
-
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Email", fontSize = 18.sp, modifier = Modifier.padding(8.dp))
+
         // Email Input
+        Text(text = "Email", fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
         OutlinedTextField(
             value = email,
-            onValueChange = { input -> email=input },
-            shape = RoundedCornerShape(10.dp),
+            onValueChange = { email = it },
+            shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.White)
+                .height(75.dp)
                 .padding(10.dp),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.Cyan)
-
+            colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.MintGreen)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Password", fontSize = 18.sp, modifier = Modifier.padding(8.dp))
+
         // Password Input
+        Text(text = "Password", fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = { input -> password = input },
-            shape = RoundedCornerShape(10.dp),
+            onValueChange = { password = it },
+            shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.White)
+                .height(75.dp)
                 .padding(10.dp),
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-                val image = if (passwordVisibility) {
-                    //  Icons.Filled.Visibility
-                } else {
-                    // Icons.Filled.VisibilityOff
-                }
-
                 IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    //Icon(imageVector = image, contentDescription = null)
+                    // Add visibility icons here
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.Cyan)
-
-
+            colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.MintGreen)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Confirm Password", fontSize = 18.sp, modifier = Modifier.padding(8.dp))
-        // Password Input
+
+        // Confirm Password Input
+        Text(text = "Confirm Password", fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
         OutlinedTextField(
             value = confirmPassword,
-            onValueChange = { input -> confirmPassword = input },
-            shape = RoundedCornerShape(10.dp),
+            onValueChange = { confirmPassword = it },
+            shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.White)
+                .height(75.dp)
                 .padding(10.dp),
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
-                val image = if (passwordVisibility) {
-                    //  Icons.Filled.Visibility
-                } else {
-                    // Icons.Filled.VisibilityOff
-                }
-
                 IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    //Icon(imageVector = image, contentDescription = null)
+                    // Add visibility icons here
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
-            colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.Cyan)
-
-
+            colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.MintGreen)
         )
+
+        Spacer(modifier = Modifier.height(14.dp))
 
         // Create Account Button
         Button(
@@ -337,9 +317,9 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
                         Log.i("TAG", "SignupScreen: password and confirm password are not the same")
                     }
                 }
-                
+
             },
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(30.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black,        // Default background color
                 contentColor = Color.White,         // Text color
@@ -362,25 +342,41 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         // Signup with Google
+        Text(
+            text = "-OR Signup with Google-",
+            fontSize = 16.sp,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Google Icon
         TextButton(
             onClick = {
                 val signInIntent = googleSignInClient.signInIntent
                 launcher.launch(signInIntent)
-                      },
+            },
             modifier = Modifier.fillMaxWidth()
+                .size(45.dp)
+                .align(Alignment.CenterHorizontally)
 
         ) {
-            Text(text = "Signup with Google")
             Icon(
                 painter = painterResource(id = R.drawable.google),
                 contentDescription = null,
                 tint = Color.Unspecified,
-                modifier = Modifier.size(25.dp)
+                //modifier = Modifier.size(35.dp).align(Alignment.CenterHorizontally)
+            )}
 
-            )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = "Already have an account?")
+            TextButton(onClick = onLogin) {
+                Text(text = " Login", color = AppColors.MintGreen)
+            }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         if (showDialog) {
             isLoading=false

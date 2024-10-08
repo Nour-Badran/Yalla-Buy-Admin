@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.yallabuyadmin.network.ApiState
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.model.ProductRepository
+import com.example.yallabuyadmin.products.model.Variant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -92,7 +93,22 @@ class ProductViewModel(private val repository: ProductRepository) : ViewModel() 
         }
     }
 
-
+    fun updateVariant(variant: Variant){
+        viewModelScope.launch {
+            _isUpdating.value = true
+            clearSuccess() // Clear previous success message
+            try{
+                repository.updateVariant(variant)
+                _successMessage.value = "Product updated successfully!" // Set success message
+                getAllProducts() // Refresh product list
+                clearError() // Clear error after successful update
+            } catch (e: Exception) {
+                _errorMessage.value = e.message // Set error message
+            } finally {
+                _isUpdating.value = false // Set updating state to false
+            }
+        }
+    }
     fun deleteProduct(productId: Long) {
         viewModelScope.launch {
             _deletingProducts[productId] = true // Set the specific product's deleting state to true

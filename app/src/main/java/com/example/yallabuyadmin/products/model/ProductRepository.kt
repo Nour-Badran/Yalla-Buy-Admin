@@ -1,5 +1,6 @@
 package com.example.yallabuyadmin.products.model
 
+import android.util.Log
 import com.example.yallabuyadmin.network.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -26,4 +27,12 @@ class ProductRepository(private val api: ApiService) {
         api.deleteProduct(productId)
     }
 
+    suspend fun updateVariant(variant: Variant) {
+        Log.d("Variant",variant.toString())
+        // Wrap the variant in VariantRequest
+        val variantRequest = VariantRequest(variant)
+
+        // Send the request to Shopify
+        api.updateVariant(variant.id!!, variantRequest)
+    }
 }

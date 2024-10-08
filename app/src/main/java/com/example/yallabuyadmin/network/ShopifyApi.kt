@@ -8,6 +8,8 @@ import com.example.yallabuyadmin.coupons.model.priceRuleRequest
 import com.example.yallabuyadmin.coupons.model.priceRuleResponse
 import com.example.yallabuyadmin.products.model.ProductResponse
 import com.example.yallabuyadmin.products.model.ProductsResponse
+import com.example.yallabuyadmin.products.model.Variant
+import com.example.yallabuyadmin.products.model.VariantRequest
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -26,6 +28,12 @@ interface ApiService {
     @DELETE("products/{id}.json")
     suspend fun deleteProduct(@Path("id") productId: Long): Response<Void>
 
+    //variants
+    @PUT("variants/{id}.json")
+    suspend fun updateVariant(@Path("id") variantId: Long, @Body variantRequest: VariantRequest)
+
+
+    //Create Delete
     //Menu
     @GET("locations/count.json")
     suspend fun getInventoryCount(): CountResponse

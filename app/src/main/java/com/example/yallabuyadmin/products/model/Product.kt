@@ -15,7 +15,13 @@ data class Variant(
     val id: Long? = null,
     val title: String,
     val price: String,
-    val sku: String
+    val sku: String,
+    val inventory_quantity: Long = 20L,
+    val option1: String = "5"
+)
+
+data class VariantRequest(
+    val variant: Variant
 )
 
 data class Image(

@@ -4,6 +4,9 @@ import android.util.Log
 import com.example.yallabuyadmin.network.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.http.Body
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 class ProductRepository(private val api: ApiService) {
 
@@ -34,5 +37,13 @@ class ProductRepository(private val api: ApiService) {
 
         // Send the request to Shopify
         api.updateVariant(variant.id!!, variantRequest)
+    }
+    suspend fun createVariant(productId: Long,variant: Variant)
+    {
+        val variantRequest = VariantRequest(variant)
+        api.createVariant(productId,variantRequest)
+    }
+    suspend fun deleteVariant(productId: Long,variantId: Long){
+        api.deleteVariant(productId,variantId = variantId)
     }
 }

@@ -32,8 +32,17 @@ interface ApiService {
     @PUT("variants/{id}.json")
     suspend fun updateVariant(@Path("id") variantId: Long, @Body variantRequest: VariantRequest)
 
+    @DELETE("products/{product_id}/variants/{variant_id}.json")
+    suspend fun deleteVariant(
+        @Path("product_id") productId: Long,
+        @Path("variant_id") variantId: Long
+    ): Response<Void>
 
+
+    @POST("products/{product_id}/variants.json")
+    suspend fun createVariant(@Path("product_id") productId: Long, @Body variant: VariantRequest)
     //Create Delete
+
     //Menu
     @GET("locations/count.json")
     suspend fun getInventoryCount(): CountResponse

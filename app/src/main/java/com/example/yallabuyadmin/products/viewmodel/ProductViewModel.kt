@@ -9,6 +9,7 @@ import com.example.yallabuyadmin.network.ApiState
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.model.ProductRepository
 import com.example.yallabuyadmin.products.model.Variant
+import com.example.yallabuyadmin.products.model.VariantRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -92,7 +93,21 @@ class ProductViewModel(private val repository: ProductRepository) : ViewModel() 
             }
         }
     }
-
+    fun createVariant(productId: Long,variant: Variant)
+    {
+        viewModelScope.launch {
+            _isLoading.value = true // Set loading state to true
+            try {
+                repository.createVariant(productId,variant)
+                _successMessage.value = "Variant created successfully!" // Set success message
+                clearError() // Clear error after successful creation
+            } catch (e: Exception) {
+                _errorMessage.value = e.message // Set error message
+            } finally {
+                _isLoading.value = false // Set loading state to false
+            }
+        }
+    }
     fun updateVariant(variant: Variant){
         viewModelScope.launch {
             _isUpdating.value = true
@@ -124,5 +139,16 @@ class ProductViewModel(private val repository: ProductRepository) : ViewModel() 
             }
         }
     }
-
+    fun deleteVariant(productId: Long,variantId: Long){
+        viewModelScope.launch {
+            try {
+                repository.deleteVariant(productId,variantId)
+                _successMessage.value = "Variant deleted successfully!" // Set success message
+                getAllProducts() // Refresh product list
+                clearError() // Clear error after successful deletion
+            } catch (e: Exception) {
+                _errorMessage.value = e.message // Set error message
+            }
+        }
+    }
 }

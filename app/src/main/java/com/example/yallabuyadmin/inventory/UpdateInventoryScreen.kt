@@ -59,9 +59,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -121,6 +124,28 @@ fun UpdateInventoryScreen(
                 }
             )
         },
+        floatingActionButton = {
+            // Floating Action Button for adding new variant
+            FloatingActionButton(
+                onClick = {
+                    // Call the ViewModel to add the new variant
+                    viewModel.createVariant(
+                        productId = product.id!!,
+                        variant = Variant(
+                            option1 = "size",
+                            price = "0",
+                            inventory_quantity = 0L,
+                            sku = "",
+                            title = ""
+                        )
+                    )
+                },
+                containerColor = Color.Black,
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Variant")
+            }
+        },
         content = { padding ->
             Column(
                 modifier = Modifier
@@ -161,10 +186,32 @@ fun UpdateInventoryScreen(
                                 variants = variants.toMutableList().apply {
                                     this[index] = this[index].copy(option2 = option2)
                                 }
+                            },
+                            onDelete = {
+                                viewModel.deleteVariant(product.id!!, variant.id!!)
                             }
                         )
                     }
                 }
+
+//                Button(
+//                    onClick = {
+//                        // Call the ViewModel to add the new variant
+//                        viewModel.createVariant(
+//                            productId = product.id!!,
+//                                    Variant(
+//                                option1 = "size",
+//                                price = "0",
+//                                inventory_quantity = 0L,
+//                                        sku = "",
+//                                        title = ""
+//                            )
+//                        )
+//                    },
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    Text("Add Variant")
+//                }
 
                 Button(
                     onClick = {
@@ -175,8 +222,8 @@ fun UpdateInventoryScreen(
                         //viewModel.updateProduct(updatedProduct)
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(top = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     enabled = !isLoading
                 ) {
                     if (isLoading) {
@@ -214,7 +261,8 @@ fun VariantCard(
     onPriceChange: (String) -> Unit,
     onQuantityChange: (String) -> Unit,
     onOption1Change: (String) -> Unit,
-    onOption2Change: (String) -> Unit
+    onOption2Change: (String) -> Unit,
+    onDelete: () -> Unit // Pass delete function
 ) {
 
     Card(
@@ -282,6 +330,17 @@ fun VariantCard(
                     unfocusedBorderColor = Color.Black
                 )
             )
+            TextButton(
+                onClick = onDelete,
+                modifier = Modifier
+                    .padding(vertical = 8.dp) // Add padding for spacing
+                    .fillMaxWidth(), // Make it fill the width for better placement
+                colors = ButtonDefaults.textButtonColors(contentColor = Color.Red),
+                shape = RoundedCornerShape(12.dp), // Make the button rounded
+            ) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                Text("Delete Variant", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp)) // Spacing between icon and text
+            }
         }
     }
 }

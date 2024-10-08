@@ -19,6 +19,7 @@ import com.example.yallabuyadmin.coupons.view.DiscountCodesScreen
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModelFactory
 import com.example.yallabuyadmin.inventory.InventoryScreen
+import com.example.yallabuyadmin.inventory.UpdateInventoryScreen
 import com.example.yallabuyadmin.menu.model.MenuRemoteDataSource
 import com.example.yallabuyadmin.menu.model.MenuRepository
 import com.example.yallabuyadmin.menu.view.MenuScreen
@@ -66,6 +67,7 @@ fun MainContent() {
     val loggedIn = sharedPreferences.getBoolean("logged_in", false)
 
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
+    var selectedInventory by remember { mutableStateOf<Product?>(null) }
     var createNewProduct by remember { mutableStateOf(false) }
     var navigateToMenu by remember { mutableStateOf(loggedIn) }
     var navigateToInventory by remember { mutableStateOf(false) }
@@ -159,7 +161,11 @@ fun MainContent() {
             InventoryScreen(onBack = {
                 navigateToInventory = false
                 navigateToMenu = true
-            })
+            },viewModel,
+                onNavigateToUpdate = { product ->
+                    navigateToInventory = false
+                    selectedInventory = product
+                })
         }
         navigateToCoupons -> {
             CouponsScreen(
@@ -191,6 +197,17 @@ fun MainContent() {
                     createNewProduct = false
                 },
                 onBack = { createNewProduct = false }
+            )
+        }
+        selectedInventory != null -> {
+            UpdateInventoryScreen(
+                product = selectedInventory!!,
+                viewModel = viewModel,
+                onBack = {
+                    selectedInventory=null
+                    navigateToInventory = true
+                         },
+                onUpdateProduct = {selectedInventory=null}
             )
         }
         selectedProduct != null -> {

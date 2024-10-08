@@ -111,7 +111,13 @@ fun ProductManagementScreen(
                     label = { Text("Search Products") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        cursorColor = Color.Black,
+                        focusedLabelColor = Color.Black
+                    )
                 )
 
                 when (productsState) {

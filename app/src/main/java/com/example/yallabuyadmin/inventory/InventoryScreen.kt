@@ -38,6 +38,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -127,10 +128,16 @@ fun InventoryScreen(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    label = { Text("Search Products") },
+                    label = { Text("Search") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        cursorColor = Color.Black,
+                        focusedLabelColor = Color.Black
+                    )
                 )
 
                 when (productsState) {
@@ -166,7 +173,7 @@ fun InventoryScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(filteredProducts) { product ->
-                                ProductCard(
+                                InventoryCard(
                                     product = product,
                                     onSelect = { onNavigateToUpdate(product) },
                                     onDelete = { productToDelete = product },
@@ -205,7 +212,7 @@ fun InventoryScreen(
 }
 
 @Composable
-fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, isDeleting: Boolean) {
+fun InventoryCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, isDeleting: Boolean) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -265,34 +272,34 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, color = Color.Gray),
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Product Price
-            Row(modifier = Modifier.fillMaxSize())
-            {
-                if (product.variants.isNotEmpty()) {
-                    val price = product.variants.first().price
-                    val annotatedString = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.Black)) {
-                            append("Price: \$")
-                        }
-                        withStyle(style = SpanStyle(color = Color.Green)) {
-                            append("${price}")
-                        }
-                    }
-                    Text(
-                        text = annotatedString,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
-                        modifier = Modifier.padding(horizontal = 8.dp)
-                    )
-
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red,
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .clickable { onDelete() })
-                }
-            }
+//
+//            Spacer(modifier = Modifier.height(4.dp))
+//
+//            // Product Price
+//            Row(modifier = Modifier.fillMaxSize())
+//            {
+//                if (product.variants.isNotEmpty()) {
+//                    val price = product.variants.first().price
+//                    val annotatedString = buildAnnotatedString {
+//                        withStyle(style = SpanStyle(color = Color.Black)) {
+//                            append("Price: \$")
+//                        }
+//                        withStyle(style = SpanStyle(color = Color.Green)) {
+//                            append("${price}")
+//                        }
+//                    }
+//                    Text(
+//                        text = annotatedString,
+//                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+//                        modifier = Modifier.padding(horizontal = 8.dp)
+//                    )
+//
+//                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red,
+//                        modifier = Modifier
+//                            .wrapContentHeight()
+//                            .clickable { onDelete() })
+//                }
+//            }
         }
     }
 }

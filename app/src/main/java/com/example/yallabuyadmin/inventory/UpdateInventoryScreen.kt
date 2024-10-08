@@ -156,6 +156,11 @@ fun UpdateInventoryScreen(
                                 variants = variants.toMutableList().apply {
                                     this[index] = this[index].copy(option1 = option1)
                                 }
+                            },
+                            onOption2Change = { option2 ->
+                                variants = variants.toMutableList().apply {
+                                    this[index] = this[index].copy(option2 = option2)
+                                }
                             }
                         )
                     }
@@ -165,7 +170,7 @@ fun UpdateInventoryScreen(
                     onClick = {
                         for(variant in variants)
                         {
-                            viewModel.updateVariant(Variant(option1 = variant.option1, id = variant.id , price = variant.price, title = "Size", sku = "", inventory_quantity = variant.inventory_quantity))
+                            viewModel.updateVariant(Variant(option2 = variant.option2, option1 = variant.option1, id = variant.id , price = variant.price, title = "Size", sku = "", inventory_quantity = variant.inventory_quantity))
                         }
                         //viewModel.updateProduct(updatedProduct)
                     },
@@ -208,12 +213,9 @@ fun VariantCard(
     variant: Variant,
     onPriceChange: (String) -> Unit,
     onQuantityChange: (String) -> Unit,
-    onOption1Change: (String) -> Unit // New callback for updating the title
+    onOption1Change: (String) -> Unit,
+    onOption2Change: (String) -> Unit
 ) {
-    // Split title into size and color if format is "size / color"
-    val titleParts = variant.title.split(" / ")
-    var size by remember { mutableStateOf(variant.option1) }
-    var color by remember { mutableStateOf(if (titleParts.size > 1) titleParts[1] else "") }
 
     Card(
         modifier = Modifier
@@ -241,11 +243,8 @@ fun VariantCard(
 
             // Color input field
             OutlinedTextField(
-                value = color,
-                onValueChange = {
-                    color = it
-                    //onTitleChange("$size / $color") // Update the title when color changes
-                },
+                value = variant.option2 ?: "",  // Use empty string if option2 is null
+                onValueChange = onOption2Change,
                 label = { Text("Color") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -254,6 +253,7 @@ fun VariantCard(
                     unfocusedBorderColor = Color.Black
                 )
             )
+
 
             // Price input field (allowing only numbers)
             OutlinedTextField(

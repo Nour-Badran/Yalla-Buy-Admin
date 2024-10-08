@@ -17,7 +17,8 @@ data class Variant(
     val price: String,
     val sku: String,
     val inventory_quantity: Long = 20L,
-    val option1: String = "5"
+    val option1: String = "5",
+    val option2: String? = "red"
 )
 
 data class VariantRequest(

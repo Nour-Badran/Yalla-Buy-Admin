@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -39,59 +37,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
-import com.example.yallabuyadmin.products.view.uploadImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.model.Variant
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.yallabuyadmin.network.ApiService
-
+import com.example.yallabuyadmin.network.ApiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,33 +82,56 @@ fun UpdateInventoryScreen(
     val successMessage by viewModel.successMessage.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    // Fetch variants on screen entry
+    LaunchedEffect(product.id) {
+        viewModel.getVariants(product.id!!)
+    }
+
+    // Observe the variants state
+    val variantsState by viewModel.variants.collectAsState()
+
+    // Update the local variants state based on the viewModel's state
+    when (variantsState) {
+        is ApiState.Loading -> {
+            // Handle loading state
+        }
+        is ApiState.Success -> {
+            variants = (variantsState as ApiState.Success<List<Variant>>).data
+        }
+        is ApiState.Error -> {
+            // Handle error state
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(productName, fontSize = 20.sp, color = Color.White) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = {
+                        // Fetch updated variants before going back
+                        onBack()
+                    }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 }
             )
         },
         floatingActionButton = {
-            // Floating Action Button for adding new variant
             FloatingActionButton(
                 onClick = {
-                    // Call the ViewModel to add the new variant
                     viewModel.createVariant(
                         productId = product.id!!,
                         variant = Variant(
                             option1 = "size",
                             price = "0",
-                            inventory_quantity = 0L,
+                            inventory_quantity = 20L,
                             sku = "",
                             title = ""
                         )
                     )
+                    //viewModel.getVariants(product.id)
                 },
                 containerColor = Color.Black,
                 contentColor = Color.White
@@ -189,45 +183,22 @@ fun UpdateInventoryScreen(
                             onDelete = {
                                 if (variants.size == 1) {
                                     Toast.makeText(context, "You can't delete the only variant", Toast.LENGTH_SHORT).show()
-                                }
-                                else
-                                {
+                                } else {
                                     viewModel.deleteVariant(product.id!!, variant.id!!)
+                                    //viewModel.getVariants(product.id)
                                 }
                             }
                         )
                     }
                 }
-
-//                Button(
-//                    onClick = {
-//                        // Call the ViewModel to add the new variant
-//                        viewModel.createVariant(
-//                            productId = product.id!!,
-//                                    Variant(
-//                                option1 = "size",
-//                                price = "0",
-//                                inventory_quantity = 0L,
-//                                        sku = "",
-//                                        title = ""
-//                            )
-//                        )
-//                    },
-//                    modifier = Modifier.fillMaxWidth()
-//                ) {
-//                    Text("Add Variant")
-//                }
-
                 Button(
                     onClick = {
-                        for(variant in variants)
-                        {
-                            viewModel.updateVariant(Variant(option2 = variant.option2, option1 = variant.option1, id = variant.id , price = variant.price, title = "Size", sku = "", inventory_quantity = variant.inventory_quantity))
+                        variants.forEach { variant ->
+                            viewModel.updateVariant(variant.copy(title = "Size")) // Assuming title is static here
+                            //viewModel.getVariants(product.id!!)
                         }
-                        //viewModel.updateProduct(updatedProduct)
                     },
-                    modifier = Modifier
-                        .padding(top = 16.dp),
+                    modifier = Modifier.padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     enabled = !isLoading
                 ) {
@@ -249,9 +220,10 @@ fun UpdateInventoryScreen(
 
                 successMessage?.let {
                     coroutineScope.launch {
-                        delay(3000)
+                        delay(500)
+                        viewModel.getVariants(product.id!!)
                         viewModel.clearSuccess()
-                        onBack()
+                        //onBack()
                     }
                     Text("Success: $it", color = Color.Green)
                 }
@@ -259,6 +231,7 @@ fun UpdateInventoryScreen(
         }
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VariantCard(
@@ -269,6 +242,7 @@ fun VariantCard(
     onOption2Change: (String) -> Unit,
     onDelete: () -> Unit // Pass delete function
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -336,15 +310,40 @@ fun VariantCard(
                 )
             )
             TextButton(
-                onClick = onDelete,
+                onClick = { showDeleteDialog = true }, // Show the dialog instead of deleting directly
                 modifier = Modifier
-                    .padding(vertical = 8.dp) // Add padding for spacing
-                    .fillMaxWidth(), // Make it fill the width for better placement
+                    .padding(vertical = 8.dp)
+                    .fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(contentColor = Color.Red),
-                shape = RoundedCornerShape(12.dp), // Make the button rounded
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
-                Text("Delete Variant", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp)) // Spacing between icon and text
+                Text("Delete Variant", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+            }
+
+            // Confirmation Dialog
+            if (showDeleteDialog) {
+                AlertDialog(
+                    containerColor = Color.White,
+                    onDismissRequest = { showDeleteDialog = false },
+                    title = { Text("Delete Variant",color= Color.Black) },
+                    text = { Text("Are you sure you want to delete this variant?",color= Color.Black) },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                onDelete() // Call the delete action
+                                showDeleteDialog = false // Hide the dialog
+                            }
+                        ) {
+                            Text("Yes", color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteDialog = false }) {
+                            Text("No",color = Color.Black)
+                        }
+                    }
+                )
             }
         }
     }

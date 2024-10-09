@@ -222,6 +222,7 @@ fun UpdateInventoryScreen(
                     coroutineScope.launch {
                         delay(500)
                         viewModel.getVariants(product.id!!)
+                        delay(2500)
                         viewModel.clearSuccess()
                         //onBack()
                     }

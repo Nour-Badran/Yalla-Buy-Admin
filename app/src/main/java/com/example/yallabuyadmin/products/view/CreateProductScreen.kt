@@ -35,6 +35,7 @@ import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import com.example.yallabuyadmin.R
+import com.example.yallabuyadmin.products.model.Option
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
@@ -256,6 +257,18 @@ fun CreateProductScreen(
                             val variantList = variants.split(",").map { title ->
                                 Variant(title = title.trim(), price = price, sku = "")
                             }
+                            val defaultOptions = listOf(
+                                Option(
+                                    name = "Size",
+                                    position = 1,
+                                    values = listOf("4") // Default size
+                                ),
+                                Option(
+                                    name = "Color",
+                                    position = 2,
+                                    values = listOf("black") // Default color
+                                )
+                            )
                             val newProduct = Product(
                                 title = productName,
                                 body_html = "Sample Description",
@@ -263,7 +276,8 @@ fun CreateProductScreen(
                                 product_type = productType,
                                 tags = "Sample Tag",
                                 images = listOf(ProductImage(src = imageUrl)),
-                                variants = variantList
+                                variants = variantList,
+                                options = defaultOptions // Add default options
                             )
                             viewModel.createProduct(newProduct)
                         },

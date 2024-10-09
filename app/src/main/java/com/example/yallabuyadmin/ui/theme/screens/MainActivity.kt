@@ -206,18 +206,14 @@ fun MainContent() {
                 onBack = {
                     selectedInventory=null
                     navigateToInventory = true
-                         },
-                onUpdateProduct = {selectedInventory=null}
+                         }
             )
         }
         selectedProduct != null -> {
             UpdateProductScreen(
                 product = selectedProduct!!,
                 viewModel = viewModel,
-                onBack = { selectedProduct = null },
-                onUpdateProduct = {
-                    selectedProduct = null // Reset selected product
-                }
+                onBack = { selectedProduct = null }
             )
         }
         else -> {

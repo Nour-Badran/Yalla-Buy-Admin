@@ -10,6 +10,7 @@ import com.example.yallabuyadmin.products.model.ProductResponse
 import com.example.yallabuyadmin.products.model.ProductsResponse
 import com.example.yallabuyadmin.products.model.Variant
 import com.example.yallabuyadmin.products.model.VariantRequest
+import com.example.yallabuyadmin.products.model.VariantResponse
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -38,6 +39,8 @@ interface ApiService {
         @Path("variant_id") variantId: Long
     ): Response<Void>
 
+    @GET("products/{product_id}/variants.json")
+    suspend fun getVariants(@Path("product_id") productId: Long) : VariantResponse
 
     @POST("products/{product_id}/variants.json")
     suspend fun createVariant(@Path("product_id") productId: Long, @Body variant: VariantRequest)

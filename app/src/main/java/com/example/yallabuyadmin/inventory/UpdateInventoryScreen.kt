@@ -1,6 +1,7 @@
 package com.example.yallabuyadmin.inventory
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -97,14 +98,12 @@ import com.example.yallabuyadmin.network.ApiService
 fun UpdateInventoryScreen(
     product: Product,
     viewModel: ProductViewModel = viewModel(),
-    onUpdateProduct: () -> Unit,
     onBack: () -> Unit
 ) {
     // States for product properties
     var productName by remember { mutableStateOf(product.title) }
-    var vendor by remember { mutableStateOf(product.vendor) }
-    var productType by remember { mutableStateOf(product.product_type) }
     var variants by remember { mutableStateOf(product.variants) }
+    val context = LocalContext.current
 
     // Collect loading, error, and success states
     val isLoading by viewModel.isUpdating
@@ -188,7 +187,13 @@ fun UpdateInventoryScreen(
                                 }
                             },
                             onDelete = {
-                                viewModel.deleteVariant(product.id!!, variant.id!!)
+                                if (variants.size == 1) {
+                                    Toast.makeText(context, "You can't delete the only variant", Toast.LENGTH_SHORT).show()
+                                }
+                                else
+                                {
+                                    viewModel.deleteVariant(product.id!!, variant.id!!)
+                                }
                             }
                         )
                     }

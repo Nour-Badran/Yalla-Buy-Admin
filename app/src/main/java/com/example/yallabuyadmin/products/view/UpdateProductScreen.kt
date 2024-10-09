@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 fun UpdateProductScreen(
     product: Product,
     viewModel: ProductViewModel = viewModel(),
-    onUpdateProduct: () -> Unit,
     onBack: () -> Unit
 ) {
     Log.d("Id",product.id.toString())

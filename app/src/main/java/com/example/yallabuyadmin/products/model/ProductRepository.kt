@@ -19,7 +19,9 @@ class ProductRepository(private val api: ApiService) {
     suspend fun createProduct(product: Product) {
         api.createProduct(ProductResponse(product))
     }
-
+    suspend fun getVariants(productId: Long): Flow<List<Variant>> = flow {
+        emit(api.getVariants(productId).variants)
+    }
     // Update a product
     suspend fun updateProduct(product: Product) {
         api.updateProduct(product.id ?: 0, ProductResponse(product))

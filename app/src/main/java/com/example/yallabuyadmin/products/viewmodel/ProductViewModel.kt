@@ -21,6 +21,9 @@ class ProductViewModel(private val repository: ProductRepository) : ViewModel() 
     private val _apiState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<List<Product>>> get() = _apiState
 
+    private val _variants= MutableStateFlow<ApiState<List<Variant>>>(ApiState.Loading)
+    val variants: StateFlow<ApiState<List<Variant>>> get() = _variants
+
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> get() = _errorMessage
 
@@ -50,13 +53,26 @@ class ProductViewModel(private val repository: ProductRepository) : ViewModel() 
             repository.getAllProducts()
                 .onStart {
                     _apiState.value = ApiState.Loading // Set loading state
-                }
-                .catch { e ->
+                }.catch { e ->
                     _apiState.value = ApiState.Error(e.message ?: "Unknown error")
                     _errorMessage.value = e.message // Set error message
                 }
                 .collect { productList ->
                     _apiState.value = ApiState.Success(productList) // Set success state with data
+                }
+        }
+    }
+
+    fun getVariants(productId: Long){
+        viewModelScope.launch {
+            repository.getVariants(productId)
+                .onStart {
+                    _variants.value = ApiState.Loading
+                }.catch { e->
+                    _variants.value = ApiState.Error(e.message ?: "Unknown error")
+                    _errorMessage.value = e.message
+                }.collect{ variants ->
+                    _variants.value = ApiState.Success(variants)
                 }
         }
     }

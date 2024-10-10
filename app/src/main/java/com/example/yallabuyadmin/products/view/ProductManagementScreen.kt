@@ -40,6 +40,7 @@ import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.network.ApiState
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
+import com.example.yallabuyadmin.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,16 +80,20 @@ fun ProductManagementScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Product Management", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
+                title = { Text("Product Management", color = AppColors.Teal) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Image(
+                            painter = painterResource(id = R.drawable.back_arrow),
+                            contentDescription = "back arrow",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToCreate) {
-                        Icon(Icons.Default.Add, contentDescription = "Create Product", tint = Color.White)
+                        Icon(Icons.Default.Add, contentDescription = "Create Product", tint = AppColors.Teal)
                     }
                 }
             )
@@ -112,14 +117,11 @@ fun ProductManagementScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        cursorColor = Color.Black,
-                        focusedLabelColor = Color.Black
+                    shape = RoundedCornerShape(20.dp),
+                    colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.Teal
+                    , focusedContainerColor = AppColors.Teal
                     )
                 )
-
                 when (productsState) {
                     is ApiState.Loading -> {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -143,14 +145,13 @@ fun ProductManagementScreen(
                             it.title.contains(searchQuery, ignoreCase = true) ||
                                     it.vendor.contains(searchQuery, ignoreCase = true)
                         }
-
                         LazyVerticalGrid(
                             columns = GridCells.Adaptive(minSize = 128.dp),
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                .padding(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             items(filteredProducts) { product ->
                                 ProductCard(
@@ -166,7 +167,6 @@ fun ProductManagementScreen(
             }
         }
     )
-
     // Confirmation dialog for deletion
     productToDelete?.let { product ->
         AlertDialog(
@@ -190,7 +190,6 @@ fun ProductManagementScreen(
         )
     }
 }
-
 @Composable
 fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, isDeleting: Boolean) {
     Card(
@@ -200,7 +199,7 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
             .clickable { onSelect() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
-        border = BorderStroke(1.dp,Color.DarkGray)
+        border = BorderStroke(.5.dp, AppColors.Teal)
     ) {
         Column(
             modifier = Modifier
@@ -219,24 +218,19 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
                         .background(Color.LightGray),
                     contentScale = ContentScale.Crop
                 )
-            } ?: run {
-                // Placeholder content if there is no image
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center // Center content in the box
-                ) {
-                    Text("No Image Available", color = Color.DarkGray,textAlign = TextAlign.Center)
-                }
+            } ?: Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.LightGray),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No Image Available", color = Color.DarkGray, textAlign = TextAlign.Center)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-
-            // Product Title
             Text(
                 text = product.title,
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold),
@@ -246,7 +240,6 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Vendor Name
             Text(
                 text = "by ${product.vendor}",
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, color = Color.Gray),
@@ -255,33 +248,33 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Product Price
-            Row(modifier = Modifier.fillMaxSize())
-            {
+            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
                 if (product.variants.isNotEmpty()) {
                     val price = product.variants.first().price
                     val annotatedString = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.Black)) {
-                            append("Price: \$")
-                        }
-                        withStyle(style = SpanStyle(color = Color.Green)) {
-                            append("${price}")
+                        withStyle(style = SpanStyle(color = AppColors.Teal)) {
+                            append("\$${price}")
                         }
                     }
                     Text(
                         text = annotatedString,
                         style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
                     )
 
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red,
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Red,
                         modifier = Modifier
-                            .wrapContentHeight()
-                            .clickable { onDelete() })
+                            .size(24.dp)
+                            .clickable { onDelete() }
+                    )
                 }
             }
         }
     }
+
 }
 
 @Preview(showSystemUi = true, showBackground = true)

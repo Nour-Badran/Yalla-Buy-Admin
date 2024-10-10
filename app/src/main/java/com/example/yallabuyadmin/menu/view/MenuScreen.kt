@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.menu.viewmodel.MenuViewModel
+import com.example.yallabuyadmin.ui.theme.AppColors
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -88,8 +89,8 @@ fun MenuScreen(
                         Icon(
                             painter = painterResource(id = R.drawable.img_3),
                             contentDescription = null,
-                            modifier = Modifier.size(40.dp),
-                            tint = Color.Black
+                            modifier = Modifier.size(30.dp),
+                            tint = AppColors.Teal
                         )
 
                         Text(
@@ -104,7 +105,8 @@ fun MenuScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.img_2),
                                 contentDescription = "Logout",
-                                tint = Color.Black
+                                tint = AppColors.Teal,
+                                modifier = Modifier.size(30.dp),
                             )
                         }
                     }
@@ -140,12 +142,12 @@ fun MenuScreen(
 
             CircularImageWithText()
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "Start managing your business",
                 fontSize = 24.sp,
-                color = Color(0xFF1E1E1E),
+                color = Color.Black,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
@@ -153,7 +155,7 @@ fun MenuScreen(
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(48.dp),
-                    color = Color.Black
+                    color = AppColors.GoldenYellow
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             } else {
@@ -192,12 +194,10 @@ fun CircularImageWithText() {
     Box(
         modifier = Modifier
             .padding(26.dp)
-            .size(100.dp)
-            .clip(CircleShape)
-            .background(Color(0xFFBDBDBD))
+            .size(150.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.m),
+            painter = painterResource(id = R.drawable.manager1),
             contentDescription = "Profile Image",
             modifier = Modifier.fillMaxSize().clip(CircleShape)
         )
@@ -209,14 +209,14 @@ fun EnhancedButton(
     onClick: () -> Unit,
     title: String,
     count: String,
-    description: String
+    description: String,
 ) {
     Button(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+        shape = MaterialTheme.shapes.large,
+        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp)
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
@@ -226,10 +226,10 @@ fun EnhancedButton(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = title, fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Bold)
-                Text(text = description, fontSize = 12.sp, color = Color(0xFFE0E0E0))
+                Text(text = title, fontSize = 18.sp, color = AppColors.White, fontWeight = FontWeight.Bold)
+                Text(text = description, fontSize = 12.sp, color = AppColors.White)
             }
-            Text(text = count, fontSize = 20.sp, color = Color.White)
+            Text(text = count, fontSize = 20.sp, color = AppColors.White)
         }
     }
 }

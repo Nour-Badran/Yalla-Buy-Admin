@@ -29,6 +29,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.model.Variant
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
+import com.example.yallabuyadmin.ui.theme.AppColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -72,15 +73,16 @@ fun UpdateProductScreen(
         }
     }
     Scaffold(
+        containerColor = Color.White,
         topBar = {
             TopAppBar(
-                title = { Text("Update Product", fontSize = 20.sp, color = Color.White) },
+                title = { Text("Update Product", fontSize = 20.sp, color = AppColors.Teal) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
+                    containerColor = Color.White
                 ),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Teal)
                     }
                 }
             )
@@ -105,7 +107,7 @@ fun UpdateProductScreen(
                                 .clip(RoundedCornerShape(16.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(24.dp))
                         }
                     } else if (imageUrl.isNotBlank()) {
                         Image(
@@ -113,7 +115,7 @@ fun UpdateProductScreen(
                             contentDescription = "Product Image",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
+                                .height(300 .dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .padding(8.dp),
                             contentScale = ContentScale.FillBounds
@@ -136,11 +138,11 @@ fun UpdateProductScreen(
                         onClick = {
                             imagePickerLauncher.launch("image/*")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
                         enabled = !isUploadingImage
                     ) {
                         if (isUploadingImage) {
-                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(50.dp))
                         } else {
                             Text("Select Image", fontSize = 18.sp)
                         }
@@ -164,10 +166,10 @@ fun UpdateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
 
@@ -178,10 +180,10 @@ fun UpdateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
 
@@ -192,10 +194,10 @@ fun UpdateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
                             if (variants.isNotEmpty()) {
@@ -211,10 +213,10 @@ fun UpdateProductScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     singleLine = true,
                                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color.Black,
+                                        focusedBorderColor = AppColors.Teal,
                                         unfocusedBorderColor = Color.Black,
-                                        cursorColor = Color.Black,
-                                        focusedLabelColor = Color.Black
+                                        cursorColor = AppColors.Teal,
+                                        focusedLabelColor = AppColors.Teal
                                     )
                                 )
                             }
@@ -253,10 +255,10 @@ fun UpdateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
                         }
@@ -277,11 +279,11 @@ fun UpdateProductScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
                         enabled = !isLoading // Disable the button while loading
                     ) {
                         if (isLoading) {
-                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(24.dp))
                         } else {
                             Text("Update Product", fontSize = 18.sp, color = Color.White)
                         }

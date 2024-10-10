@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.products.model.Option
+import com.example.yallabuyadmin.ui.theme.AppColors
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
@@ -87,13 +88,14 @@ fun CreateProductScreen(
     }
 
     Scaffold(
+        containerColor = Color.White,
         topBar = {
             TopAppBar(
-                title = { Text("Create Product", fontSize = 20.sp, color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
+                title = { Text("Create Product", fontSize = 20.sp, color = AppColors.Teal) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Teal)
                     }
                 }
             )
@@ -150,7 +152,7 @@ fun CreateProductScreen(
                         onClick = {
                             imagePickerLauncher.launch("image/*")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
                         enabled = !isUploadingImage
                     ) {
                         if (isUploadingImage) {
@@ -179,10 +181,10 @@ fun CreateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
 
@@ -193,10 +195,10 @@ fun CreateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
 
@@ -207,10 +209,10 @@ fun CreateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
 
@@ -228,10 +230,10 @@ fun CreateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
 
@@ -242,10 +244,10 @@ fun CreateProductScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color.Black,
+                                    focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
-                                    cursorColor = Color.Black,
-                                    focusedLabelColor = Color.Black
+                                    cursorColor = AppColors.Teal,
+                                    focusedLabelColor = AppColors.Teal
                                 )
                             )
 
@@ -284,7 +286,7 @@ fun CreateProductScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
                         enabled = !isLoading // Disable the button while loading
                     ) {
                         if (isLoading) {

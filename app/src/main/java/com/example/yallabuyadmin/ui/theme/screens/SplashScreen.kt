@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.example.yallabuyadmin.R
+import com.example.yallabuyadmin.ui.theme.AppColors
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
@@ -41,7 +42,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
             progress = progress,
         )
         //Spacer(modifier = Modifier.height(16.dp)) // Optional spacing between animation and text
-        Text("Welcome to YallaBuy-Admin", fontSize = 24.sp, color = Color.Black)
+        Text("Welcome to YallaBuy-Admin", fontSize = 24.sp, color =AppColors.Teal)
     }
 
     LaunchedEffect(Unit) {

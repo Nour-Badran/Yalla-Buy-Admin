@@ -46,10 +46,9 @@ class MainActivity : ComponentActivity() {
                 delay(5000) // 5-second delay for splash screen
                 showSplashScreen = false
             }
-
             MaterialTheme {
                 Surface {
-                    if (showSplashScreen) {
+                    if (showSplashScreen){
                         SplashScreen(onTimeout = { showSplashScreen = false })
                     } else {
                         MainContent()

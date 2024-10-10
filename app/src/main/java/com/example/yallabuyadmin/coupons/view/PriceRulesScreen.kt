@@ -3,6 +3,7 @@ package com.example.yallabuyadmin.coupons.view
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,14 +23,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.coupons.viewmodel.CouponsViewModel
 import com.example.yallabuyadmin.coupons.model.DiscountCode
 import com.example.yallabuyadmin.coupons.model.PriceRule
 import com.example.yallabuyadmin.coupons.model.priceRuleRequest
 import com.example.yallabuyadmin.network.ApiState
+import com.example.yallabuyadmin.ui.theme.AppColors
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -109,15 +113,17 @@ fun CouponsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Price Rules", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
-                ),
+                title = { Text("Discount Codes", color = AppColors.Teal) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Image(
+                            painter = painterResource(id = R.drawable.back_arrow),
+                            contentDescription = "back arrow",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                }
+                },
             )
         },
 
@@ -125,7 +131,7 @@ fun CouponsScreen(
             FloatingActionButton(onClick = {
                 currentPriceRule = null // Reset for new price rule
                 showCreatePriceRuleDialog = true
-            },contentColor = Color.White, containerColor = Color.Black) {
+            },contentColor = Color.White, containerColor = AppColors.Teal) {
                 Icon(Icons.Default.Add, contentDescription = "Create Discount Code")
             }
         },
@@ -162,7 +168,7 @@ fun CouponsScreen(
                                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                                     shape = RoundedCornerShape(12.dp),
                                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                                    border = BorderStroke(1.dp, Color.Black)
+                                    border = BorderStroke(.5.dp, AppColors.Teal)
                                 ) {
                                     Column(
                                         modifier = Modifier
@@ -173,7 +179,7 @@ fun CouponsScreen(
                                         Text(
                                             text = priceRule.title,
                                             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                                            color = Color.Black
+                                            color = AppColors.Teal
                                         )
                                         // Discount Value
                                         Text(
@@ -218,7 +224,10 @@ fun CouponsScreen(
                                             TextButton(onClick = {
                                                 showDeleteConfirmation = true
                                             }) {
-                                                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.trash),
+                                                    contentDescription = "Delete",
+                                                    modifier = Modifier.size(24.dp))
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text("Delete", color = Color.Red)
                                             }
@@ -326,7 +335,8 @@ fun PriceRuleDialog(
         title = {
             Text(
                 text = if (priceRule == null) "Add Price Rule" else "Edit Price Rule",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = AppColors.Teal
             )
         },
         text = {
@@ -432,14 +442,14 @@ fun PriceRuleDialog(
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
             ) {
                 Text("Submit")
             }
         },
         dismissButton = {
             Button(onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
             ) {
                 Text("Dismiss")
             }

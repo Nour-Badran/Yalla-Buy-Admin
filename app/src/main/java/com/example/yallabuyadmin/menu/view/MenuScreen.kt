@@ -155,7 +155,7 @@ fun MenuScreen(
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(48.dp),
-                    color = AppColors.GoldenYellow
+                    color = AppColors.Teal
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             } else {

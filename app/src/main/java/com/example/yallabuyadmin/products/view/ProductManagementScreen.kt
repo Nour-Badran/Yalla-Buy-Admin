@@ -80,7 +80,7 @@ fun ProductManagementScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Product Management", color = AppColors.Teal) },
+                title = { Text("Price Rules", color = AppColors.Teal) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -120,7 +120,8 @@ fun ProductManagementScreen(
                     shape = RoundedCornerShape(20.dp),
                     colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.Teal
                     , focusedBorderColor = AppColors.Teal,
-                        focusedLabelColor = AppColors.Teal
+                        focusedLabelColor = AppColors.Teal,
+                        cursorColor = AppColors.Teal
                     )
                 )
                 when (productsState) {
@@ -147,7 +148,7 @@ fun ProductManagementScreen(
                                     it.vendor.contains(searchQuery, ignoreCase = true)
                         }
                         LazyVerticalGrid(
-                            columns = GridCells.Adaptive(minSize = 128.dp),
+                            columns = GridCells.Fixed(2),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(8.dp),
@@ -263,14 +264,13 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
                         modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
                     )
 
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        tint = Color.Red,
-                        modifier = Modifier
-                            .size(24.dp)
+                    Image(
+                            painter = painterResource(id = R.drawable.trash),
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(24.dp)
                             .clickable { onDelete() }
-                    )
+
+                        )
                 }
             }
         }

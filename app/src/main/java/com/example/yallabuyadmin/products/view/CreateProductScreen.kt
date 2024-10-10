@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.products.model.Option
 import com.example.yallabuyadmin.ui.theme.AppColors
@@ -95,7 +96,11 @@ fun CreateProductScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Teal)
+                        Image(
+                            painter = painterResource(id = R.drawable.back_arrow),
+                            contentDescription = "back arrow",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             )

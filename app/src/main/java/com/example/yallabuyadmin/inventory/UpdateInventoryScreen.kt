@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -58,11 +60,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.model.Variant
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
+import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.network.ApiState
+import com.example.yallabuyadmin.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,14 +112,20 @@ fun UpdateInventoryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(productName, fontSize = 20.sp, color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
+                modifier = Modifier.padding(top = 8.dp),
+                title = { Text(productName, fontSize = 20.sp, color = AppColors.Teal, maxLines = 1,
+                    overflow = TextOverflow.Ellipsis ) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = {
                         // Fetch updated variants before going back
                         onBack()
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Image(
+                            painter = painterResource(id = R.drawable.back_arrow),
+                            contentDescription = "back arrow",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             )
@@ -133,7 +145,7 @@ fun UpdateInventoryScreen(
                     )
                     //viewModel.getVariants(product.id)
                 },
-                containerColor = Color.Black,
+                containerColor = AppColors.Teal,
                 contentColor = Color.White
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Variant")
@@ -198,8 +210,9 @@ fun UpdateInventoryScreen(
                             //viewModel.getVariants(product.id!!)
                         }
                     },
-                    modifier = Modifier.padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                    modifier = Modifier.padding(top = 16.dp)
+                    ,
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
                     enabled = !isLoading
                 ) {
                     if (isLoading) {
@@ -250,7 +263,8 @@ fun VariantCard(
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(.5.dp, AppColors.Teal)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -264,8 +278,10 @@ fun VariantCard(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black
+                    focusedBorderColor = AppColors.Teal,
+                    unfocusedBorderColor = Color.Black,
+                    cursorColor = AppColors.Teal,
+                    focusedLabelColor = AppColors.Teal
                 )
             )
 
@@ -277,8 +293,10 @@ fun VariantCard(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black
+                    focusedBorderColor = AppColors.Teal,
+                    unfocusedBorderColor = Color.Black,
+                    cursorColor = AppColors.Teal,
+                    focusedLabelColor = AppColors.Teal
                 )
             )
 
@@ -292,8 +310,10 @@ fun VariantCard(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black
+                    focusedBorderColor = AppColors.Teal,
+                    unfocusedBorderColor = Color.Black,
+                    cursorColor = AppColors.Teal,
+                    focusedLabelColor = AppColors.Teal
                 )
             )
 
@@ -306,8 +326,10 @@ fun VariantCard(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black
+                    focusedBorderColor = AppColors.Teal,
+                    unfocusedBorderColor = Color.Black,
+                    cursorColor = AppColors.Teal,
+                    focusedLabelColor = AppColors.Teal
                 )
             )
             TextButton(
@@ -318,7 +340,11 @@ fun VariantCard(
                 colors = ButtonDefaults.textButtonColors(contentColor = Color.Red),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                Image(
+                    painter = painterResource(id = R.drawable.trash),
+                    contentDescription = "Delete",
+                    modifier = Modifier.size(24.dp)
+                )
                 Text("Delete Variant", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
             }
 

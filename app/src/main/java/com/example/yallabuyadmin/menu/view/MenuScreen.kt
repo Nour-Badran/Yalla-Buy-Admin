@@ -117,7 +117,7 @@ fun MenuScreen(
                 AlertDialog(
                     containerColor = Color.White,
                     onDismissRequest = { showLogoutConfirmation = false },
-                    title = { Text("Confirm Logout") },
+                    title = { Text("Confirm Logout", color = AppColors.Teal) },
                     text = { Text("Are you sure you want to log out?") },
                     confirmButton = {
                         TextButton(onClick = {
@@ -131,7 +131,7 @@ fun MenuScreen(
                         TextButton(onClick = {
                             showLogoutConfirmation = false
                         }) {
-                            Text("Cancel", color = Color.Black)
+                            Text("Cancel", color = AppColors.Teal)
                         }
                     }
                 )

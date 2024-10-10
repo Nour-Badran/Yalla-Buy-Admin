@@ -96,11 +96,7 @@ fun CreateProductScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back_arrow),
-                            contentDescription = "back arrow",
-                            modifier = Modifier.size(24.dp)
-                        )
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = AppColors.Teal)
                     }
                 }
             )
@@ -126,7 +122,7 @@ fun CreateProductScreen(
                                 .clip(RoundedCornerShape(16.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(24.dp))
                         }
                     } else if (imageUrl.isNotBlank()) {
                         Image(
@@ -161,7 +157,7 @@ fun CreateProductScreen(
                         enabled = !isUploadingImage
                     ) {
                         if (isUploadingImage) {
-                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(24.dp))
                         } else {
                             Text("Select Image", fontSize = 18.sp)
                         }
@@ -189,7 +185,8 @@ fun CreateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
 
@@ -203,7 +200,8 @@ fun CreateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
 
@@ -217,17 +215,11 @@ fun CreateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
 
-//                    OutlinedTextField(
-//                        value = variants,
-//                        onValueChange = { variants = it },
-//                        label = { Text("Variants (Comma separated)", fontWeight = FontWeight.Bold) },
-//                        modifier = Modifier.fillMaxWidth(),
-//                        singleLine = true
-//                    )
                             OutlinedTextField(
                                 value = price,
                                 onValueChange = { price = it },
@@ -238,7 +230,8 @@ fun CreateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
 
@@ -252,7 +245,8 @@ fun CreateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
 
@@ -295,7 +289,7 @@ fun CreateProductScreen(
                         enabled = !isLoading // Disable the button while loading
                     ) {
                         if (isLoading) {
-                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(24.dp))
                         } else {
                             Text("Create Product", fontSize = 18.sp)
                         }

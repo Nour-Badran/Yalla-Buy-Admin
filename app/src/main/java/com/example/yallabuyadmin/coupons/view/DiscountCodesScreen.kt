@@ -233,8 +233,12 @@ fun DiscountCodeDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = AppColors.Teal,
+                        unfocusedBorderColor = Color.Black,
+                        cursorColor = AppColors.Teal,
+                        focusedLabelColor = AppColors.Teal,
+                        focusedTextColor = AppColors.Teal
                     ),
                     value = code,
                     onValueChange = { code = it },

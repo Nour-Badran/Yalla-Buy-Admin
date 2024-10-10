@@ -108,7 +108,7 @@ fun InventoryScreen(
         containerColor = Color.White,
         topBar = {
             TopAppBar(
-                title = { Text("Inventory", fontSize = 20.sp, color = AppColors.Teal) },
+                title = { Text("Inventory", color = AppColors.Teal) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -145,7 +145,8 @@ fun InventoryScreen(
                     colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.Teal
                         , focusedBorderColor = AppColors.Teal,
                         focusedLabelColor = AppColors.Teal,
-                        cursorColor = AppColors.Teal
+                        cursorColor = AppColors.Teal,
+                        focusedTextColor = AppColors.Teal
                     )
                 )
 

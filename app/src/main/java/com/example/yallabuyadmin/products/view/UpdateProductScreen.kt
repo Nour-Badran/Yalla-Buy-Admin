@@ -142,7 +142,7 @@ fun UpdateProductScreen(
                         enabled = !isUploadingImage
                     ) {
                         if (isUploadingImage) {
-                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(50.dp))
+                            CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(24.dp))
                         } else {
                             Text("Select Image", fontSize = 18.sp)
                         }
@@ -169,7 +169,8 @@ fun UpdateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
 
@@ -183,7 +184,8 @@ fun UpdateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
 
@@ -197,7 +199,8 @@ fun UpdateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
                             if (variants.isNotEmpty()) {
@@ -216,37 +219,11 @@ fun UpdateProductScreen(
                                         focusedBorderColor = AppColors.Teal,
                                         unfocusedBorderColor = Color.Black,
                                         cursorColor = AppColors.Teal,
-                                        focusedLabelColor = AppColors.Teal
+                                        focusedLabelColor = AppColors.Teal,
+                                        focusedTextColor = AppColors.Teal
                                     )
                                 )
                             }
-
-//                            variants.forEachIndexed { index, variant ->
-//                                Column(modifier = Modifier.fillMaxWidth()) {
-//                                    OutlinedTextField(
-//                                        value = variant.title,
-//                                        onValueChange = { updatedTitle ->
-//                                            variants = variants.toMutableList().apply {
-//                                                this[index] = this[index].copy(title = updatedTitle)
-//                                            }
-//                                        },
-//                                        label = { Text("Variant ${index + 1} Title", fontWeight = FontWeight.Bold) },
-//                                        modifier = Modifier.fillMaxWidth(),
-//                                        singleLine = true
-//                                    )
-//                                    OutlinedTextField(
-//                                        value = variant.price,
-//                                        onValueChange = { updatedPrice ->
-//                                            variants = variants.toMutableList().apply {
-//                                                this[index] = this[index].copy(price = updatedPrice)
-//                                            }
-//                                        },
-//                                        label = { Text("Variant ${index + 1} Price", fontWeight = FontWeight.Bold) },
-//                                        modifier = Modifier.fillMaxWidth(),
-//                                        singleLine = true
-//                                    )
-//                                }
-//                            }
 
                             OutlinedTextField(
                                 value = imageUrl,
@@ -258,7 +235,8 @@ fun UpdateProductScreen(
                                     focusedBorderColor = AppColors.Teal,
                                     unfocusedBorderColor = Color.Black,
                                     cursorColor = AppColors.Teal,
-                                    focusedLabelColor = AppColors.Teal
+                                    focusedLabelColor = AppColors.Teal,
+                                    focusedTextColor = AppColors.Teal
                                 )
                             )
                         }

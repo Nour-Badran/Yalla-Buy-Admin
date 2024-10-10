@@ -121,7 +121,8 @@ fun ProductManagementScreen(
                     colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.Teal
                     , focusedBorderColor = AppColors.Teal,
                         focusedLabelColor = AppColors.Teal,
-                        cursorColor = AppColors.Teal
+                        cursorColor = AppColors.Teal,
+                        focusedTextColor = AppColors.Teal
                     )
                 )
                 when (productsState) {
@@ -255,7 +256,7 @@ fun ProductCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, is
                     val price = product.variants.first().price
                     val annotatedString = buildAnnotatedString {
                         withStyle(style = SpanStyle(color = AppColors.Teal)) {
-                            append("\$${price}")
+                            append("${price} EGP")
                         }
                     }
                     Text(

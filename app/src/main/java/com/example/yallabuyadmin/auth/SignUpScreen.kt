@@ -57,129 +57,6 @@ import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.ui.theme.AppColors
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 
-@Composable
-fun CreateAccountScreen() {
-    var userName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var pass by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Create Account",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Start learning with create your account!",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-
-        OutlinedTextField(
-            value = userName,
-            onValueChange = {input -> userName = input},
-            label = { Text("Create your username") },
-            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = {input -> email = input},
-            label = { Text("Enter your email or phone number") },
-            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth()
-
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Password TextField
-        OutlinedTextField(
-            value = pass,
-            onValueChange = {input -> pass = input},
-            label = { Text("Create your password") },
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-           // trailingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                isLoading = true
-
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5C4CE3))
-        ) {
-            if (isLoading) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-            } else {
-                Text(text = "Create Account", color = Color.White)
-            }
-        }
-        errorMessage?.let {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = it, color = Color.Red)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Or using other method",
-            color = Color.Gray,
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = { /* Handle Google Sign Up */ },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.google), // replace with your Google icon resource
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(25.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Sign Up with Google")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedButton(
-            onClick = { /* Handle Facebook Sign Up */ },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.facebook), // replace with your Facebook icon resource
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(25.dp)
-
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Sign Up with Facebook")
-        }
-    }
-}
 
 
 @Composable
@@ -201,6 +78,8 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         auth.handleSignInResult(task, context, onSignupSuccess)
     }
+    Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -208,19 +87,13 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Column( horizontalAlignment = Alignment.Start,
-
-            ) {
-            Text(text = "Create an account",
-                fontSize = 35.sp,
-                color = Color.Black,
-                modifier = Modifier.padding(8.dp)
-            )
-
-//            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-
+        Text(
+            text = "Create an account",
+            fontSize = 28.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(8.dp)
+        )
+        // Header
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Full Name", fontSize = 16.sp, modifier = Modifier.padding(start = 8.dp))
         OutlinedTextField(
@@ -233,7 +106,6 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
                 .padding(10.dp),
             colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.MintGreen)
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
         // Email Input
@@ -321,15 +193,13 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
             },
             shape = RoundedCornerShape(30.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black,        // Default background color
-                contentColor = Color.White,         // Text color
-                disabledContainerColor = Color.Gray // Background color when disabled
+                containerColor = AppColors.Teal,
+                contentColor = Color.White
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
                 .height(60.dp)
-
+                .padding(10.dp)
         ) {
             if (isLoading) {
                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
@@ -343,7 +213,7 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
 
         // Signup with Google
         Text(
-            text = "-OR Signup with Google-",
+            text = "OR Signup with Google",
             fontSize = 16.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -351,12 +221,13 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
         Spacer(modifier = Modifier.height(10.dp))
 
         // Google Icon
-        TextButton(
+        IconButton(
             onClick = {
                 val signInIntent = googleSignInClient.signInIntent
                 launcher.launch(signInIntent)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .size(45.dp)
                 .align(Alignment.CenterHorizontally)
 
@@ -370,13 +241,15 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Spacer(modifier = Modifier.width(10.dp))
             Text(text = "Already have an account?")
             TextButton(onClick = onLogin) {
                 Text(text = " Login", color = AppColors.MintGreen)
             }
         }
+
+        Spacer(modifier = Modifier.height(14.dp))
 
         if (showDialog) {
             isLoading=false
@@ -388,55 +261,24 @@ fun SignupScreen(onSignupSuccess: () -> Unit,onLogin: () -> Unit) {
                         onLogin()
                         //navController.navigate(Screen.LogInScreen.route)
                     }) {
-                        Text("OK", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Cyan)
+                        Text("OK", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = AppColors.MintGreen)
                     }
                 },
-                title = {
-                    Text(text = "Success", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                },
-                text = {
-                    Text("A verification email has been sent to your email. \nplease verify your email and login.", fontSize = 15.sp)
-                },
+                title = { Text(text = "Success", fontSize = 24.sp, fontWeight = FontWeight.Bold) },
+                text = { Text("A verification email has been sent to your email. Please verify and login.", fontSize = 15.sp) },
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.CheckCircle,
                         contentDescription = "Success Icon",
                         tint = Color.Cyan,
-                        modifier = Modifier.size(40.dp) // Adjust icon size
+                        modifier = Modifier.size(40.dp)
                     )
                 },
-
-                properties = DialogProperties(dismissOnBackPress = true) , shape = RectangleShape, containerColor = Color.White
+                properties = DialogProperties(dismissOnBackPress = true),
+                shape = RectangleShape,
+                containerColor = Color.White
             )
         }
 
     }
-}
-@Composable
-fun customAlert(){
-        var showDialog by remember { mutableStateOf(false) }
-
-
-        // Dialog implementation
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false }, // Action on dismiss
-                confirmButton = {
-                    TextButton(onClick = { showDialog = false }) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDialog = false }) {
-                        Text("Cancel")
-                    }
-                },
-                title = {
-                    Text(text = "Dialog Title")
-                },
-                text = {
-                    Text("This is a simple dialog in Jetpack Compose.")
-                }
-            )
-        }
 }

@@ -60,22 +60,6 @@ fun CouponsScreen(
         viewModel.fetchPriceRules()
     }
 
-    // Dialogs for discount codes and price rules
-//    if (showDiscountCodeDialog) {
-//        DiscountCodeDialog(
-//            onDismiss = { showDiscountCodeDialog = false },
-//            onSubmit = { discountCode ->
-//                currentDiscountCode?.let {
-//                    viewModel.updateDiscountCode(it.id, discountCode)
-//                } ?: run {
-//                    viewModel.createDiscountCode(1L, discountCode) // Replace with actual priceRuleId
-//                }
-//                currentDiscountCode = null
-//                showDiscountCodeDialog = false
-//            },
-//            discountCode = currentDiscountCode
-//        )
-//    }
     if (showCreatePriceRuleDialog) {
         PriceRuleDialog(
             onDismiss = {
@@ -237,9 +221,9 @@ fun CouponsScreen(
                                             TextButton(onClick = {
                                                 onNavigateToDiscount(priceRule.id!!)
                                             }) {
-                                                Icon(Icons.Default.PlayArrow, contentDescription = "Apply", tint = Color.Black)
+                                                Text("Coupons", color = AppColors.Teal)
                                                 Spacer(modifier = Modifier.width(4.dp))
-                                                Text("Coupons", color = Color.Black)
+                                                Icon(Icons.Default.PlayArrow, contentDescription = "Apply", tint = AppColors.Teal)
                                             }
                                         }
 
@@ -350,8 +334,12 @@ fun PriceRuleDialog(
                     label = { Text("Title") },
                     isError = ruleName.isEmpty(),
                     modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = AppColors.Teal,
+                        unfocusedBorderColor = Color.Black,
+                        cursorColor = AppColors.Teal,
+                        focusedLabelColor = AppColors.Teal,
+                        focusedTextColor = AppColors.Teal
                     )
                 )
                 TextField(
@@ -360,8 +348,12 @@ fun PriceRuleDialog(
                     label = { Text("Discount Percentage") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = AppColors.Teal,
+                        unfocusedBorderColor = Color.Black,
+                        cursorColor = AppColors.Teal,
+                        focusedLabelColor = AppColors.Teal,
+                        focusedTextColor = AppColors.Teal
                     )
                 )
 
@@ -375,8 +367,12 @@ fun PriceRuleDialog(
                     label = { Text("Usage Limit") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = AppColors.Teal,
+                        unfocusedBorderColor = Color.Black,
+                        cursorColor = AppColors.Teal,
+                        focusedLabelColor = AppColors.Teal,
+                        focusedTextColor = AppColors.Teal
                     )
                 )
 

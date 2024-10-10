@@ -7,7 +7,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.yallabuyadmin.auth.FirebaseAuthun
 import com.example.yallabuyadmin.auth.LogInScreen
@@ -33,11 +36,16 @@ import com.example.yallabuyadmin.products.model.ProductRepository
 import com.example.yallabuyadmin.products.view.CreateProductScreen
 import com.example.yallabuyadmin.products.view.ProductManagementScreen
 import com.example.yallabuyadmin.products.view.UpdateProductScreen
+import com.example.yallabuyadmin.ui.theme.AppColors
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Set the initial status bar color (for splash screen or general)
+        setStatusBarColor(color = AppColors.Teal, isLightStatusBar = true)
+
         setContent {
             var showSplashScreen by remember { mutableStateOf(true) }
 
@@ -46,18 +54,33 @@ class MainActivity : ComponentActivity() {
                 delay(5000) // 5-second delay for splash screen
                 showSplashScreen = false
             }
+
             MaterialTheme {
                 Surface {
-                    if (showSplashScreen){
+                    if (showSplashScreen) {
+                        // Set status bar color for splash screen
+                        setStatusBarColor(color = AppColors.Teal, isLightStatusBar = true)
                         SplashScreen(onTimeout = { showSplashScreen = false })
                     } else {
+                        // Set status bar color for main content
+                        setStatusBarColor(color = AppColors.Teal, isLightStatusBar = false)
                         MainContent()
                     }
                 }
             }
         }
     }
+
+    // Utility function to set status bar color and appearance
+    private fun setStatusBarColor(color: Color, isLightStatusBar: Boolean) {
+        val window = window
+        window.statusBarColor = color.toArgb()
+
+        // Set light status bar appearance based on theme
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = isLightStatusBar
+    }
 }
+
 
 @Composable
 fun MainContent() {

@@ -1,4 +1,3 @@
-
 package com.example.yallabuyadmin.inventory
 
 import android.util.Log
@@ -102,9 +101,11 @@ fun UpdateInventoryScreen(
         is ApiState.Loading -> {
             // Handle loading state
         }
+
         is ApiState.Success -> {
             variants = (variantsState as ApiState.Success<List<Variant>>).data
         }
+
         is ApiState.Error -> {
             // Handle error state
         }
@@ -114,18 +115,22 @@ fun UpdateInventoryScreen(
         topBar = {
             TopAppBar(
                 modifier = Modifier.padding(top = 8.dp),
-                title = { Text(productName, fontSize = 20.sp, color = AppColors.Teal, maxLines = 1,
-                    overflow = TextOverflow.Ellipsis ) },
+                title = {
+                    Text(
+                        productName,
+                        fontSize = 22.sp,
+                        color = AppColors.Teal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
-                    IconButton(onClick = {
-                        // Fetch updated variants before going back
-                        onBack()
-                    }) {
-                        Image(
-                            painter = painterResource(id = R.drawable.back_arrow),
-                            contentDescription = "back arrow",
-                            modifier = Modifier.size(24.dp)
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = AppColors.Teal
                         )
                     }
                 }
@@ -145,7 +150,6 @@ fun UpdateInventoryScreen(
                             title = ""
                         )
                     )
-                    //viewModel.getVariants(product.id)
                 },
                 containerColor = AppColors.Teal,
                 contentColor = Color.White
@@ -165,8 +169,8 @@ fun UpdateInventoryScreen(
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     items(variants.size) { index ->
                         val variant = variants[index]
@@ -180,7 +184,8 @@ fun UpdateInventoryScreen(
                             onQuantityChange = { updatedQuantity ->
                                 variants = variants.toMutableList().apply {
                                     if (updatedQuantity.isNotEmpty()) {
-                                        this[index] = this[index].copy(inventory_quantity = updatedQuantity.toLong())
+                                        this[index] =
+                                            this[index].copy(inventory_quantity = updatedQuantity.toLong())
                                     }
                                 }
                             },
@@ -199,7 +204,6 @@ fun UpdateInventoryScreen(
                                     Toast.makeText(context, "You can't delete the only variant", Toast.LENGTH_SHORT).show()
                                 } else {
                                     viewModel.deleteVariant(product.id!!, variant.id!!)
-                                    //viewModel.getVariants(product.id)
                                 }
                             }
                         )
@@ -208,42 +212,47 @@ fun UpdateInventoryScreen(
                 Button(
                     onClick = {
                         variants.forEach { variant ->
-                            viewModel.updateVariant(variant.copy(title = "Size")) // Assuming title is static here
-                            //viewModel.getVariants(product.id!!)
+                            viewModel.updateVariant(variant.copy(title = "Size"))
                         }
                     },
                     modifier = Modifier
                         .padding(end = 8.dp, start = 8.dp)
-                        .fillMaxWidth()
-                    ,
+                        .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
                     enabled = !isLoading
                 ) {
                     if (isLoading) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
                     } else {
-                        Text("Update Product", fontSize = 18.sp,  modifier = Modifier.padding(8.dp))
+                        Text("Update Product", fontSize = 18.sp)
                     }
                 }
 
                 // Display error or success message
                 errorMessage?.let {
                     coroutineScope.launch {
-                        delay(3000)
+                        delay(1500)
                         viewModel.clearError()
                     }
-                    Text("Error: $it", color = Color.Red)
+                    Snackbar {
+                        Text("Error: $it", color = Color.Red)
+                    }
                 }
 
                 successMessage?.let {
                     coroutineScope.launch {
                         delay(500)
                         viewModel.getVariants(product.id!!)
-                        delay(2500)
+                        delay(1500)
                         viewModel.clearSuccess()
                         //onBack()
                     }
-                    Text("Success: $it", color = Color.Green)
+                    Snackbar {
+                        Text("Success: $it", color = Color.Green)
+                    }
                 }
             }
         }
@@ -264,15 +273,16 @@ fun VariantCard(
 
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(12.dp),  // Added padding to create space around the card
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(.5.dp, AppColors.Teal)
+        shape = RoundedCornerShape(12.dp),  // Increased the corner radius
+        border = BorderStroke(1.dp, AppColors.Teal)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Size input field
             OutlinedTextField(
@@ -285,7 +295,8 @@ fun VariantCard(
                     focusedBorderColor = AppColors.Teal,
                     unfocusedBorderColor = Color.Black,
                     cursorColor = AppColors.Teal,
-                    focusedLabelColor = AppColors.Teal
+                    focusedLabelColor = AppColors.Teal,
+                    focusedTextColor = AppColors.Teal
                 )
             )
 
@@ -300,7 +311,8 @@ fun VariantCard(
                     focusedBorderColor = AppColors.Teal,
                     unfocusedBorderColor = Color.Black,
                     cursorColor = AppColors.Teal,
-                    focusedLabelColor = AppColors.Teal
+                    focusedLabelColor = AppColors.Teal,
+                    focusedTextColor = AppColors.Teal
                 )
             )
 
@@ -317,7 +329,8 @@ fun VariantCard(
                     focusedBorderColor = AppColors.Teal,
                     unfocusedBorderColor = Color.Black,
                     cursorColor = AppColors.Teal,
-                    focusedLabelColor = AppColors.Teal
+                    focusedLabelColor = AppColors.Teal,
+                    focusedTextColor = AppColors.Teal
                 )
             )
 
@@ -333,11 +346,14 @@ fun VariantCard(
                     focusedBorderColor = AppColors.Teal,
                     unfocusedBorderColor = Color.Black,
                     cursorColor = AppColors.Teal,
-                    focusedLabelColor = AppColors.Teal
+                    focusedLabelColor = AppColors.Teal,
+                    focusedTextColor = AppColors.Teal
                 )
             )
             TextButton(
-                onClick = { showDeleteDialog = true }, // Show the dialog instead of deleting directly
+                onClick = {
+                    showDeleteDialog = true
+                }, // Show the dialog instead of deleting directly
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .fillMaxWidth(),
@@ -349,7 +365,11 @@ fun VariantCard(
                     contentDescription = "Delete",
                     modifier = Modifier.size(24.dp)
                 )
-                Text("Delete Variant", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
+                Text(
+                    "Delete Variant",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
             }
 
             // Confirmation Dialog
@@ -357,8 +377,13 @@ fun VariantCard(
                 AlertDialog(
                     containerColor = Color.White,
                     onDismissRequest = { showDeleteDialog = false },
-                    title = { Text("Delete Variant",color= AppColors.Teal) },
-                    text = { Text("Are you sure you want to delete this variant?",color= Color.Black) },
+                    title = { Text("Delete Variant", color = AppColors.Teal) },
+                    text = {
+                        Text(
+                            "Are you sure you want to delete this variant?",
+                            color = Color.Black
+                        )
+                    },
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -371,11 +396,11 @@ fun VariantCard(
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteDialog = false }) {
-                            Text("No",color = AppColors.Teal)
+                            Text("No", color = AppColors.Teal)
                         }
                     }
                 )
             }
-            }
         }
+    }
 }

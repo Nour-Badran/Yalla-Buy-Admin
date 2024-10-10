@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -53,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -62,10 +64,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.network.ApiState
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.view.ProductCard
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
+import com.example.yallabuyadmin.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,13 +105,18 @@ fun InventoryScreen(
         }
     }
     Scaffold(
+        containerColor = Color.White,
         topBar = {
             TopAppBar(
-                title = { Text("Inventory", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
+                title = { Text("Inventory", fontSize = 20.sp, color = AppColors.Teal) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Image(
+                            painter = painterResource(id = R.drawable.back_arrow),
+                            contentDescription = "back arrow",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             )
@@ -132,11 +141,11 @@ fun InventoryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        cursorColor = Color.Black,
-                        focusedLabelColor = Color.Black
+                    shape = RoundedCornerShape(20.dp),
+                    colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.Teal
+                        , focusedBorderColor = AppColors.Teal,
+                        focusedLabelColor = AppColors.Teal,
+                        cursorColor = AppColors.Teal
                     )
                 )
 
@@ -165,12 +174,12 @@ fun InventoryScreen(
                         }
 
                         LazyVerticalGrid(
-                            columns = GridCells.Adaptive(minSize = 128.dp),
+                            columns = GridCells.Fixed(2),
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                .padding(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             items(filteredProducts) { product ->
                                 InventoryCard(
@@ -220,7 +229,7 @@ fun InventoryCard(product: Product, onSelect: () -> Unit, onDelete: () -> Unit, 
             .clickable { onSelect() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
-        border = BorderStroke(1.dp,Color.DarkGray)
+        border = BorderStroke(.5.dp, AppColors.Teal)
     ) {
         Column(
             modifier = Modifier

@@ -3,6 +3,7 @@ package com.example.yallabuyadmin.coupons.view
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,12 +25,15 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.window.Dialog
+import com.example.yallabuyadmin.R
 import com.example.yallabuyadmin.coupons.model.DiscountCode
 import com.example.yallabuyadmin.coupons.model.DiscountCodeRequest
 import com.example.yallabuyadmin.coupons.model.PriceRule
 import com.example.yallabuyadmin.network.ApiState
+import com.example.yallabuyadmin.ui.theme.AppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,19 +55,21 @@ fun DiscountCodesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Discount Codes", color = Color.White) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black
-                ),
+                title = { Text("Discount Codes", color = AppColors.Teal) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        Image(
+                            painter = painterResource(id = R.drawable.back_arrow),
+                            contentDescription = "back arrow",
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showCreateDialog.value = true },contentColor = Color.White, containerColor = Color.Black) {
+            FloatingActionButton(onClick = { showCreateDialog.value = true },contentColor = Color.White, containerColor = AppColors.Teal) {
                 Icon(Icons.Default.Add, contentDescription = "Create Discount Code")
             }
         },
@@ -92,14 +98,15 @@ fun DiscountCodesScreen(
                                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                                     shape = RoundedCornerShape(12.dp),
                                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                                    border = BorderStroke(1.dp, Color.Black)
+                                    border = BorderStroke(.5.dp, AppColors.Teal)
                                 ) {
                                     Column(
                                         modifier = Modifier.padding(16.dp)
                                     ) {
                                         Text(
                                             text = "Code: ${discountCode.code}",
-                                            style = MaterialTheme.typography.titleMedium
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = AppColors.Teal
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
@@ -123,7 +130,10 @@ fun DiscountCodesScreen(
                                             TextButton(onClick = {
                                                 showDeleteConfirmation = true
                                             }) {
-                                                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.trash),
+                                                    contentDescription = "Delete",
+                                                    modifier = Modifier.size(24.dp))
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text("Delete", color = Color.Red)
                                             }

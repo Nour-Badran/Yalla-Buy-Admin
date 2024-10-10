@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.yallabuyadmin.coupons.model.CouponsRepository
 import com.example.yallabuyadmin.coupons.model.DiscountCode
 import com.example.yallabuyadmin.coupons.model.DiscountCodeRequest
+import com.example.yallabuyadmin.coupons.model.ICouponsRepository
 import com.example.yallabuyadmin.coupons.model.PriceRule
 import com.example.yallabuyadmin.coupons.model.priceRuleRequest
 import com.example.yallabuyadmin.network.ApiState
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-class CouponsViewModel(private val couponsRepository: CouponsRepository) : ViewModel() {
+class CouponsViewModel(private val couponsRepository: ICouponsRepository) : ViewModel() {
 
     private val _discountCodes = MutableStateFlow<ApiState<List<DiscountCode>>>(ApiState.Loading)
     val discountCodes: StateFlow<ApiState<List<DiscountCode>>> get() = _discountCodes

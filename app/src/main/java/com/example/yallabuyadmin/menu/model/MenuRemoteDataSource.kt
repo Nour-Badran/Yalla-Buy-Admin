@@ -2,16 +2,24 @@ package com.example.yallabuyadmin.menu.model
 
 import com.example.yallabuyadmin.network.ApiService
 
-class MenuRemoteDataSource(private val api: ApiService) {
-    suspend fun getInventoryCount(): Int {
+interface IMenuRemoteDataSource {
+    suspend fun getInventoryCount(): Int
+
+    suspend fun getProductsCount(): Int
+
+    suspend fun getCouponsCount(): Int
+}
+
+class MenuRemoteDataSource(private val api: ApiService) : IMenuRemoteDataSource {
+    override suspend fun getInventoryCount(): Int {
         return api.getInventoryCount().count
     }
 
-    suspend fun getProductsCount(): Int {
+    override suspend fun getProductsCount(): Int {
         return api.getProductsCount().count
     }
 
-    suspend fun getCouponsCount(): Int {
+    override suspend fun getCouponsCount(): Int {
         return api.getCouponsCount().count
     }
 }

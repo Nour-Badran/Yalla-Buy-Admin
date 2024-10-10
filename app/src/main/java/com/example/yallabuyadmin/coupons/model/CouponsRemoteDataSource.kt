@@ -5,16 +5,34 @@ import com.example.yallabuyadmin.network.ApiService
 import retrofit2.HttpException
 import retrofit2.Response
 
-class CouponsRemoteDataSource(private val apiService: ApiService) {
+interface ICouponsRemoteDataSource {
+    suspend fun getPriceRules(): priceRuleResponse
 
-    suspend fun getPriceRules(): priceRuleResponse {
+    suspend fun createPriceRule(priceRule: priceRuleRequest): priceRuleResponse
+
+    suspend fun deletePriceRule(priceRuleId: Long): Result<Unit>
+
+    suspend fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest): Response<PriceRule>
+
+    suspend fun getDiscountCodes(priceRuleId: Long): DiscountCodeResponse
+
+    suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest)
+
+    suspend fun updateDiscountCode(priceRuleId: Long, id: Long, discountCode: DiscountCodeRequest)
+
+    suspend fun deleteDiscountCode(priceRuleId: Long, id: Long)
+}
+
+class CouponsRemoteDataSource(private val apiService: ApiService) : ICouponsRemoteDataSource {
+
+    override suspend fun getPriceRules(): priceRuleResponse {
         return apiService.getPriceRules()
     }
 
-    suspend fun createPriceRule(priceRule: priceRuleRequest): priceRuleResponse {
+    override suspend fun createPriceRule(priceRule: priceRuleRequest): priceRuleResponse {
         return apiService.createPriceRule(priceRule)
     }
-    suspend fun deletePriceRule(priceRuleId: Long): Result<Unit> {
+    override suspend fun deletePriceRule(priceRuleId: Long): Result<Unit> {
         return try {
             val response = apiService.deletePriceRule(priceRuleId)
             Log.d("API Response", response.toString())
@@ -30,7 +48,7 @@ class CouponsRemoteDataSource(private val apiService: ApiService) {
             Result.failure(e)
         }
     }
-    suspend fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest): Response<PriceRule> {
+    override suspend fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest): Response<PriceRule> {
         return apiService.updatePriceRule(priceRuleId, priceRule)
 //        return if (response.isSuccessful) {
 //            Result.success(response.body()?.price_rule ?: error("No price rule returned"))
@@ -38,17 +56,17 @@ class CouponsRemoteDataSource(private val apiService: ApiService) {
 //            Result.failure(Exception("Failed to update price rule: ${response.message()}"))
 //        }
     }
-    suspend fun getDiscountCodes(priceRuleId: Long): DiscountCodeResponse {
+    override suspend fun getDiscountCodes(priceRuleId: Long): DiscountCodeResponse {
         Log.d("Discount Codes",apiService.getDiscountCodes(priceRuleId).toString())
         return apiService.getDiscountCodes(priceRuleId)
     }
 
-    suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest) {
+    override suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest) {
         Log.d("Discount Code",discountCode.toString())
         apiService.createDiscountCode(priceRuleId, discountCode)
     }
 
-    suspend fun updateDiscountCode(priceRuleId: Long,id: Long, discountCode: DiscountCodeRequest) {
+    override suspend fun updateDiscountCode(priceRuleId: Long, id: Long, discountCode: DiscountCodeRequest) {
         try {
             Log.d("item",discountCode.toString())
             apiService.updateDiscountCode(priceRuleId,id, discountCode)
@@ -62,7 +80,7 @@ class CouponsRemoteDataSource(private val apiService: ApiService) {
 
 
 
-    suspend fun deleteDiscountCode(priceRuleId: Long,id: Long) {
+    override suspend fun deleteDiscountCode(priceRuleId: Long, id: Long) {
         apiService.deleteDiscountCode(priceRuleId,id)
     }
 }

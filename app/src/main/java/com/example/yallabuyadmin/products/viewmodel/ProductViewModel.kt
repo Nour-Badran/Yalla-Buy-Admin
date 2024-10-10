@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.yallabuyadmin.network.ApiState
+import com.example.yallabuyadmin.products.model.IProductRepository
 import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.model.ProductRepository
 import com.example.yallabuyadmin.products.model.Variant
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 
-class ProductViewModel(private val repository: ProductRepository) : ViewModel() {
+class ProductViewModel(private val repository: IProductRepository) : ViewModel() {
 
     private val _apiState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<List<Product>>> get() = _apiState

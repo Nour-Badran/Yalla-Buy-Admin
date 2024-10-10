@@ -4,9 +4,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 
-class CouponsRepository(private val remoteDataSource: CouponsRemoteDataSource) {
+interface ICouponsRepository {
+    fun getPriceRules(): Flow<List<PriceRule>>
 
-    fun getPriceRules(): Flow<List<PriceRule>> = flow {
+    suspend fun createPriceRule(priceRule: priceRuleRequest): priceRuleResponse
+
+    suspend fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest): Response<PriceRule>
+
+    suspend fun deletePriceRule(priceRuleId: Long): Result<Unit>
+    fun getDiscountCodes(priceRuleId: Long): Flow<List<DiscountCode>>
+
+    suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest)
+
+    suspend fun updateDiscountCode(priceRuleId: Long, id: Long, discountCode: DiscountCodeRequest)
+
+    suspend fun deleteDiscountCode(priceRuleId: Long, id: Long)
+}
+
+class CouponsRepository(private val remoteDataSource: ICouponsRemoteDataSource) :
+    ICouponsRepository {
+
+    override fun getPriceRules(): Flow<List<PriceRule>> = flow {
         try {
             val response = remoteDataSource.getPriceRules()
             emit(response.price_rules)
@@ -14,19 +32,19 @@ class CouponsRepository(private val remoteDataSource: CouponsRemoteDataSource) {
             emit(emptyList()) // Emit an empty list in case of an error
         }
     }
-    suspend fun createPriceRule(priceRule: priceRuleRequest): priceRuleResponse {
+    override suspend fun createPriceRule(priceRule: priceRuleRequest): priceRuleResponse {
         return remoteDataSource.createPriceRule(priceRule)
     }
 
-    suspend fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest): Response<PriceRule> {
+    override suspend fun updatePriceRule(priceRuleId: Long, priceRule: priceRuleRequest): Response<PriceRule> {
         return remoteDataSource.updatePriceRule(priceRuleId, priceRule)
     }
 
-    suspend fun deletePriceRule(priceRuleId: Long): Result<Unit> {
+    override suspend fun deletePriceRule(priceRuleId: Long): Result<Unit> {
         return remoteDataSource.deletePriceRule(priceRuleId)
     }
 
-    fun getDiscountCodes(priceRuleId: Long): Flow<List<DiscountCode>> = flow {
+    override fun getDiscountCodes(priceRuleId: Long): Flow<List<DiscountCode>> = flow {
         try {
             val response = remoteDataSource.getDiscountCodes(priceRuleId)
             emit(response.discount_codes)
@@ -37,15 +55,15 @@ class CouponsRepository(private val remoteDataSource: CouponsRemoteDataSource) {
 
     //suspend fun getDiscountCodes(priceRuleId: Long) = remoteDataSource.getDiscountCodes(priceRuleId)
 
-    suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest) {
+    override suspend fun createDiscountCode(priceRuleId: Long, discountCode: DiscountCodeRequest) {
         remoteDataSource.createDiscountCode(priceRuleId, discountCode)
     }
 
-    suspend fun updateDiscountCode(priceRuleId: Long,id: Long, discountCode: DiscountCodeRequest) {
+    override suspend fun updateDiscountCode(priceRuleId: Long, id: Long, discountCode: DiscountCodeRequest) {
         remoteDataSource.updateDiscountCode(priceRuleId,id, discountCode)
     }
 
-    suspend fun deleteDiscountCode(priceRuleId: Long,id: Long) {
+    override suspend fun deleteDiscountCode(priceRuleId: Long, id: Long) {
         remoteDataSource.deleteDiscountCode(priceRuleId,id)
     }
 }

@@ -1,7 +1,15 @@
 package com.example.yallabuyadmin.menu.model
 
-class MenuRepository(private val remoteDataSource: MenuRemoteDataSource) {
-    suspend fun getInventoryCount()  = remoteDataSource.getInventoryCount()
-    suspend fun getProductsCount() = remoteDataSource.getProductsCount()
-    suspend fun getCouponsCount() = remoteDataSource.getCouponsCount()
+interface IMenuRepository {
+    suspend fun getInventoryCount(): Int
+
+    suspend fun getProductsCount(): Int
+
+    suspend fun getCouponsCount(): Int
+}
+
+class MenuRepository(private val remoteDataSource: IMenuRemoteDataSource) : IMenuRepository {
+    override suspend fun getInventoryCount()  = remoteDataSource.getInventoryCount()
+    override suspend fun getProductsCount() = remoteDataSource.getProductsCount()
+    override suspend fun getCouponsCount() = remoteDataSource.getCouponsCount()
 }

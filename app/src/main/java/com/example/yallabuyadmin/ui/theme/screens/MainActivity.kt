@@ -32,6 +32,7 @@ import com.example.yallabuyadmin.products.model.Product
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModel
 import com.example.yallabuyadmin.products.viewmodel.ProductViewModelFactory
 import com.example.yallabuyadmin.network.RetrofitInstance
+import com.example.yallabuyadmin.products.model.ProductRemoteDataSource
 import com.example.yallabuyadmin.products.model.ProductRepository
 import com.example.yallabuyadmin.products.view.CreateProductScreen
 import com.example.yallabuyadmin.products.view.ProductManagementScreen
@@ -99,10 +100,15 @@ fun MainContent() {
     var navigateToSignUp by remember { mutableStateOf(false) }
     var navigateToLogin by remember { mutableStateOf(!loggedIn) }
 
-    val viewModel: ProductViewModel = viewModel(factory = ProductViewModelFactory(
-        ProductRepository(
-            RetrofitInstance.api)
-    ))
+    val viewModel: ProductViewModel = viewModel(
+        factory = ProductViewModelFactory(
+            ProductRepository(
+                ProductRemoteDataSource(
+                    RetrofitInstance.api // Pass ApiService to ProductRemoteDataSource
+                )
+            )
+        )
+    )
 
     val menuRepository = MenuRepository(MenuRemoteDataSource(RetrofitInstance.api))
     val menuViewModel: MenuViewModel = viewModel(factory = MenuViewModelFactory(menuRepository))

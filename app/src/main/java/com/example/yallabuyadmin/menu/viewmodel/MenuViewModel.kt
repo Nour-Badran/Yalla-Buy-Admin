@@ -3,12 +3,13 @@ package com.example.yallabuyadmin.menu.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.yallabuyadmin.menu.model.IMenuRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.yallabuyadmin.menu.model.MenuRepository
 
-class MenuViewModel(private val repository: MenuRepository) : ViewModel() {
+class MenuViewModel(private val repository: IMenuRepository) : ViewModel() {
 
     private val _inventoryCount = MutableStateFlow(0)
     val inventoryCount: StateFlow<Int> = _inventoryCount

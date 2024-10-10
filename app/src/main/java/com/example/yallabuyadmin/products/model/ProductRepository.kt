@@ -1,51 +1,74 @@
 package com.example.yallabuyadmin.products.model
 
-import android.util.Log
-import com.example.yallabuyadmin.network.ApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.http.Path
 
-class ProductRepository(private val api: ApiService) {
+interface IProductRepository {
+    // Fetch all products
+    suspend fun getAllProducts(): Flow<List<Product>>
+
+    // Create a new product
+    suspend fun createProduct(product: Product)
+
+    // Get product variants
+    suspend fun getVariants(productId: Long): Flow<List<Variant>>
+
+    // Update a product
+    suspend fun updateProduct(product: Product)
+
+    // Delete a product
+    suspend fun deleteProduct(productId: Long)
+
+    // Update a variant
+    suspend fun updateVariant(variant: Variant)
+
+    // Create a variant
+    suspend fun createVariant(productId: Long, variant: Variant)
+
+    // Delete a variant
+    suspend fun deleteVariant(productId: Long, variantId: Long)
+}
+
+class ProductRepository(private val remoteDataSource: IProductRemoteDataSource) :
+    IProductRepository {
 
     // Fetch all products
-    suspend fun getAllProducts(): Flow<List<Product>> = flow {
-        emit(api.getAllProducts().products)
+    override suspend fun getAllProducts(): Flow<List<Product>> = flow {
+        emit(remoteDataSource.getAllProducts())
     }
 
     // Create a new product
-    suspend fun createProduct(product: Product) {
-        api.createProduct(ProductResponse(product))
+    override suspend fun createProduct(product: Product) {
+        remoteDataSource.createProduct(product)
     }
-    suspend fun getVariants(productId: Long): Flow<List<Variant>> = flow {
-        emit(api.getVariants(productId).variants)
+
+    // Get product variants
+    override suspend fun getVariants(productId: Long): Flow<List<Variant>> = flow {
+        emit(remoteDataSource.getVariants(productId))
     }
+
     // Update a product
-    suspend fun updateProduct(product: Product) {
-        api.updateProduct(product.id ?: 0, ProductResponse(product))
+    override suspend fun updateProduct(product: Product) {
+        remoteDataSource.updateProduct(product)
     }
 
     // Delete a product
-    suspend fun deleteProduct(productId: Long) {
-        api.deleteProduct(productId)
+    override suspend fun deleteProduct(productId: Long) {
+        remoteDataSource.deleteProduct(productId)
     }
 
-    suspend fun updateVariant(variant: Variant) {
-        Log.d("Variant",variant.toString())
-        // Wrap the variant in VariantRequest
-        val variantRequest = VariantRequest(variant)
+    // Update a variant
+    override suspend fun updateVariant(variant: Variant) {
+        remoteDataSource.updateVariant(variant)
+    }
 
-        // Send the request to Shopify
-        api.updateVariant(variant.id!!, variantRequest)
+    // Create a variant
+    override suspend fun createVariant(productId: Long, variant: Variant) {
+        remoteDataSource.createVariant(productId, variant)
     }
-    suspend fun createVariant(productId: Long,variant: Variant)
-    {
-        val variantRequest = VariantRequest(variant)
-        api.createVariant(productId,variantRequest)
-    }
-    suspend fun deleteVariant(productId: Long,variantId: Long){
-        api.deleteVariant(productId,variantId = variantId)
+
+    // Delete a variant
+    override suspend fun deleteVariant(productId: Long, variantId: Long) {
+        remoteDataSource.deleteVariant(productId, variantId)
     }
 }

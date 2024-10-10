@@ -119,7 +119,8 @@ fun ProductManagementScreen(
                         .padding(16.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors =  OutlinedTextFieldDefaults.colors(unfocusedBorderColor = AppColors.Teal
-                    , focusedContainerColor = AppColors.Teal
+                    , focusedBorderColor = AppColors.Teal,
+                        focusedLabelColor = AppColors.Teal
                     )
                 )
                 when (productsState) {

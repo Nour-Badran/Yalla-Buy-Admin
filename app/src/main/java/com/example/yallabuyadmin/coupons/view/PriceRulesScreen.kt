@@ -113,7 +113,7 @@ fun CouponsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Discount Codes", color = AppColors.Teal) },
+                title = { Text("Price Rules", color = AppColors.Teal) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -151,7 +151,10 @@ fun CouponsScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(color = Color.Black)
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
+                                color = AppColors.Teal
+                            )
                         }
                     }
                     is ApiState.Success -> {
@@ -244,7 +247,7 @@ fun CouponsScreen(
                                             AlertDialog(
                                                 containerColor = Color.White,
                                                 onDismissRequest = { showDeleteConfirmation = false },
-                                                title = { Text("Confirm Delete") },
+                                                title = { Text("Confirm Delete", color = AppColors.Teal) },
                                                 text = { Text("Are you sure you want to delete this price rule?") },
                                                 confirmButton = {
                                                     TextButton(onClick = {
@@ -393,7 +396,7 @@ fun PriceRuleDialog(
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Select Start Date & Time",
-                            tint = Color.Black
+                            tint = AppColors.Teal
                         )
                     }
                 }
@@ -414,7 +417,7 @@ fun PriceRuleDialog(
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = "Select End Date & Time",
-                            tint = Color.Black
+                            tint = AppColors.Teal
                         )
 
                     }

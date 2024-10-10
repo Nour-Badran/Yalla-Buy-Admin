@@ -154,7 +154,7 @@ fun InventoryScreen(
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(48.dp),
-                                color = Color.Black
+                                color = AppColors.Teal
                             )
                         }
                     }

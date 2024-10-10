@@ -1,3 +1,4 @@
+
 package com.example.yallabuyadmin.inventory
 
 import android.util.Log
@@ -132,6 +133,7 @@ fun UpdateInventoryScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
+                modifier = Modifier.padding(bottom = 60.dp),
                 onClick = {
                     viewModel.createVariant(
                         productId = product.id!!,
@@ -210,7 +212,9 @@ fun UpdateInventoryScreen(
                             //viewModel.getVariants(product.id!!)
                         }
                     },
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier
+                        .padding(end = 8.dp, start = 8.dp)
+                        .fillMaxWidth()
                     ,
                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.Teal),
                     enabled = !isLoading
@@ -218,7 +222,7 @@ fun UpdateInventoryScreen(
                     if (isLoading) {
                         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                     } else {
-                        Text("Update Product")
+                        Text("Update Product", fontSize = 18.sp,  modifier = Modifier.padding(8.dp))
                     }
                 }
 
@@ -353,7 +357,7 @@ fun VariantCard(
                 AlertDialog(
                     containerColor = Color.White,
                     onDismissRequest = { showDeleteDialog = false },
-                    title = { Text("Delete Variant",color= Color.Black) },
+                    title = { Text("Delete Variant",color= AppColors.Teal) },
                     text = { Text("Are you sure you want to delete this variant?",color= Color.Black) },
                     confirmButton = {
                         TextButton(
@@ -367,11 +371,11 @@ fun VariantCard(
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteDialog = false }) {
-                            Text("No",color = Color.Black)
+                            Text("No",color = AppColors.Teal)
                         }
                     }
                 )
             }
+            }
         }
-    }
 }

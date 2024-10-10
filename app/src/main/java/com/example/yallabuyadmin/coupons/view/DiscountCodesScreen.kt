@@ -78,7 +78,7 @@ fun DiscountCodesScreen(
                 when (discountCodes) {
                     is ApiState.Loading -> {
                         // Show loading indicator
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color.Black)
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = AppColors.Teal)
                     }
                     is ApiState.Success -> {
                         val discountCodes = (discountCodes as ApiState.Success<List<DiscountCode>>).data
@@ -143,7 +143,7 @@ fun DiscountCodesScreen(
                                             AlertDialog(
                                                 containerColor = Color.White,
                                                 onDismissRequest = { showDeleteConfirmation = false },
-                                                title = { Text("Confirm Delete") },
+                                                title = { Text("Confirm Delete", color = AppColors.Teal) },
                                                 text = { Text("Are you sure you want to delete this discount code?") },
                                                 confirmButton = {
                                                     TextButton(onClick = {
@@ -228,7 +228,8 @@ fun DiscountCodeDialog(
             ) {
                 Text(
                     text = if (discountCode == null) "Create Discount Code" else "Edit Discount Code",
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = AppColors.Teal
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
@@ -257,7 +258,7 @@ fun DiscountCodeDialog(
                         )
                         onConfirm(DiscountCodeRequest(updatedCode))
                     }) {
-                        Text("Confirm", color = Color.Black)
+                        Text("Confirm", color = AppColors.Teal)
                     }
                 }
             }

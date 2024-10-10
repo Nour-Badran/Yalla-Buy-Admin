@@ -80,7 +80,7 @@ fun ProductManagementScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Price Rules", color = AppColors.Teal) },
+                title = { Text("Products", color = AppColors.Teal) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -129,7 +129,7 @@ fun ProductManagementScreen(
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(48.dp),
-                                color = Color.Black
+                                color = AppColors.Teal
                             )
                         }
                     }
@@ -367,7 +367,7 @@ fun ProductCardPre() {
                     .wrapContentHeight()
             ) {
                 if (false) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    CircularProgressIndicator(color = AppColors.Teal, modifier = Modifier.size(24.dp))
                 } else {
                     Icon(painter = painterResource(id = R.drawable.trash),
                         contentDescription = "Delete Product",tint = Color.Red)

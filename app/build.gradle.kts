@@ -58,7 +58,15 @@ dependencies {
     implementation ("androidx.activity:activity-compose:1.6.1")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
-
+// Unit testing
+    testImplementation ("junit:junit:4.13.2")
+    testImplementation ("org.mockito:mockito-core:3.11.2")
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+// AndroidX Lifecycle components for testing
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
+    testImplementation ("junit:junit:4.13.2' // or latest version")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     //lottie
     implementation ("com.airbnb.android:lottie:5.0.3")
     implementation ("com.airbnb.android:lottie-compose:5.0.3")
@@ -78,6 +86,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.storage.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.ui.test.android)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

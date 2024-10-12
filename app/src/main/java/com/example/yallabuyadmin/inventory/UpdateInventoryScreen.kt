@@ -342,6 +342,7 @@ fun VariantCard(
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 singleLine = true,
+                enabled = false,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = AppColors.Teal,
                     unfocusedBorderColor = Color.Black,

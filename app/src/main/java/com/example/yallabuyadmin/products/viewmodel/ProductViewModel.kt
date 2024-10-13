@@ -131,7 +131,7 @@ class ProductViewModel(private val repository: IProductRepository) : ViewModel()
             clearSuccess() // Clear previous success message
             try{
                 repository.updateVariant(variant)
-                _successMessage.value = "Product updated successfully!" // Set success message
+                _successMessage.value = "Variant updated successfully!" // Set success message
                 getAllProducts() // Refresh product list
                 clearError() // Clear error after successful update
             } catch (e: Exception) {

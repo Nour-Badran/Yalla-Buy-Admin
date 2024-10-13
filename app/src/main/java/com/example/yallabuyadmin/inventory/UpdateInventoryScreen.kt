@@ -227,7 +227,7 @@ fun UpdateInventoryScreen(
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
-                        Text("Update Product", fontSize = 18.sp)
+                        Text("Update Variant", fontSize = 18.sp)
                     }
                 }
 

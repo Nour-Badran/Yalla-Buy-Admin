@@ -109,10 +109,6 @@ fun DiscountCodesScreen(
                                             color = AppColors.Teal
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
-                                        Text(
-                                            text = "Usage Count: ${discountCode.usage_count}",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
                                         var showDeleteConfirmation by remember { mutableStateOf(false) }
 
                                         Row(

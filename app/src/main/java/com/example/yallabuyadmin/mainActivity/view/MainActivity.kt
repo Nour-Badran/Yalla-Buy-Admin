@@ -1,12 +1,19 @@
-package com.example.yallabuyadmin.ui.theme.screens
+package com.example.yallabuyadmin.mainActivity.view
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.AsyncTask
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -38,40 +45,97 @@ import com.example.yallabuyadmin.products.view.CreateProductScreen
 import com.example.yallabuyadmin.products.view.ProductManagementScreen
 import com.example.yallabuyadmin.products.view.UpdateProductScreen
 import com.example.yallabuyadmin.ui.theme.AppColors
+import com.example.yallabuyadmin.mainActivity.viewmodel.NetworkViewModel
+import com.example.yallabuyadmin.splash.SplashScreen
 import kotlinx.coroutines.delay
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 
 class MainActivity : ComponentActivity() {
+    private lateinit var connectivityManager: ConnectivityManager
+    private val networkViewModel: NetworkViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
+        registerNetworkCallback()
         // Set the initial status bar color (for splash screen or general)
         setStatusBarColor(color = AppColors.Teal, isLightStatusBar = true)
 
         setContent {
             var showSplashScreen by remember { mutableStateOf(true) }
+            val isConnected by networkViewModel.isConnected.observeAsState(true)
 
-            // Launch a coroutine to hide the splash screen after a delay
-            LaunchedEffect(Unit) {
-                delay(5000) // 5-second delay for splash screen
-                showSplashScreen = false
-            }
+            if(isConnected)
+            {
+                // Launch a coroutine to hide the splash screen after a delay
+                LaunchedEffect(Unit) {
+                    delay(5000) // 5-second delay for splash screen
+                    showSplashScreen = false
+                }
 
-            MaterialTheme {
-                Surface {
-                    if (showSplashScreen) {
-                        // Set status bar color for splash screen
-                        setStatusBarColor(color = AppColors.Teal, isLightStatusBar = true)
-                        SplashScreen(onTimeout = { showSplashScreen = false })
-                    } else {
-                        // Set status bar color for main content
-                        setStatusBarColor(color = AppColors.Teal, isLightStatusBar = false)
-                        MainContent()
+                MaterialTheme {
+                    Surface {
+                        if (showSplashScreen) {
+                            // Set status bar color for splash screen
+                            setStatusBarColor(color = AppColors.Teal, isLightStatusBar = true)
+                            SplashScreen(onTimeout = { showSplashScreen = false })
+                        } else {
+                            // Set status bar color for main content
+                            setStatusBarColor(color = AppColors.Teal, isLightStatusBar = false)
+                            MainContent()
+                        }
                     }
                 }
+            } else {
+                // Show no internet connection screen with Lottie animation
+                NoInternetScreen()
+            }
+        }
+    }
+    private fun registerNetworkCallback() {
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+
+        connectivityManager.registerNetworkCallback(networkRequest, object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                // When network becomes available, check for internet access
+                hasInternetAccess { hasInternet ->
+                    networkViewModel.updateNetworkStatus(hasInternet)
+                }
+            }
+
+            override fun onLost(network: Network) {
+                // Network lost, no internet connection
+                hasInternetAccess { hasInternet ->
+                    networkViewModel.updateNetworkStatus(hasInternet)
+                }
+            }
+        })
+    }
+
+
+    fun hasInternetAccess(callback: (Boolean) -> Unit) {
+        AsyncTask.execute {
+            try {
+                // Try connecting to a public DNS (Google's in this case)
+                val socket = Socket()
+                socket.connect(InetSocketAddress("8.8.8.8", 53), 5000)
+                socket.close()
+                callback(true)
+            } catch (e: IOException) {
+                callback(false)
             }
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connectivityManager.unregisterNetworkCallback(ConnectivityManager.NetworkCallback())
+    }
     // Utility function to set status bar color and appearance
     private fun setStatusBarColor(color: Color, isLightStatusBar: Boolean) {
         val window = window
